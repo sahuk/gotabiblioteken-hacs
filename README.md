@@ -127,12 +127,13 @@ Götabiblioteken's.
 
 ## Development
 
+Tooling is managed with [uv](https://docs.astral.sh/uv/):
+
 ```bash
-python3 -m venv .venv
-./.venv/bin/pip install -r requirements-dev.txt
-./.venv/bin/ruff check . && ./.venv/bin/ruff format --check .
-./.venv/bin/mypy
-./.venv/bin/pytest
+uv sync
+uv run ruff check . && uv run ruff format --check .
+uv run mypy
+uv run pytest
 ```
 
 Tests cover the pure opening-hours logic, the config/options flow,
@@ -148,7 +149,7 @@ version and releases are tagged `v<version>`. Note changes under
 `Unreleased` in [CHANGELOG.md](CHANGELOG.md), then:
 
 ```bash
-./.venv/bin/python scripts/bump_version.py patch   # or minor / major / X.Y.Z
+uv run scripts/bump_version.py patch   # or minor / major / X.Y.Z
 ```
 
 and run the git / `gh release create` commands it prints. Publishing the

@@ -16,6 +16,7 @@ release is tagged `v<version>`.
   `gotabiblioteken.zip`; `scripts/bump_version.py` for version bumps.
 - Brand icon (`brand/icon.png`) from the Götabiblioteken logo.
 - MIT license.
+- Dev dependencies managed with uv (`pyproject.toml` + `uv.lock`).
 
 ## [1.0.0] - 2026-10-20
 

@@ -1,3 +1,24 @@
+[project]
+name = "gotabiblioteken-hacs"
+description = "Home Assistant integration for Götabiblioteken library opening hours"
+# The integration's version lives in custom_components/gotabiblioteken/manifest.json.
+version = "0"
+requires-python = ">=3.13.2"
+# Runtime requirements belong in manifest.json; Home Assistant installs those.
+dependencies = []
+
+[dependency-groups]
+dev = [
+    # Pulls in a matching Home Assistant pin as a dependency.
+    "pytest-homeassistant-custom-component==0.13.316",
+    "mypy==2.4.0",
+    "ruff==0.17.2",
+]
+
+[tool.uv]
+# Dev tooling only: HACS ships custom_components/, nothing here is built.
+package = false
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]

@@ -5,12 +5,17 @@ distributed through HACS. See README.md for what it does.
 
 ## Dev loop
 
-Setup: `python3 -m venv .venv && ./.venv/bin/pip install -r requirements-dev.txt`
+Dependencies and tooling are managed with uv: dev tools live in the `dev`
+dependency group in `pyproject.toml`, locked in `uv.lock`. Runtime
+requirements of the integration go in `manifest.json` `requirements` (Home
+Assistant installs those), never in `pyproject.toml`. Tests are pytest only.
+
+Setup: `uv sync`. Add a dev tool with `uv add --dev <pkg>`.
 
 Before every commit, all of these must pass (CI runs the same):
 
 ```bash
-./.venv/bin/ruff check --fix . && ./.venv/bin/ruff format . && ./.venv/bin/mypy && ./.venv/bin/pytest
+uv run ruff check --fix . && uv run ruff format . && uv run mypy && uv run pytest
 ```
 
 - mypy is `strict` for the integration and scripts; tests only relax
@@ -37,7 +42,7 @@ Before every commit, all of these must pass (CI runs the same):
   `v<version>`. HACS offers versions from GitHub releases, so every user-facing
   change ships as a release.
 - Add changes under `## [Unreleased]` in `CHANGELOG.md` as you go.
-- Release: `./.venv/bin/python scripts/bump_version.py <major|minor|patch>`,
+- Release: `uv run scripts/bump_version.py <major|minor|patch>`,
   then run the commands it prints. Publishing the GitHub release triggers
   `.github/workflows/release.yml`, which fails if the tag doesn't match the
   manifest, reruns all checks, and attaches `gotabiblioteken.zip` (HACS
