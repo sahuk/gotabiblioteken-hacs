@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Oppdater favorittbiblioteka dine.",
+        "description": "Endre favorittbiblioteka dine.",
         "data": {
           "branches": "Favorittbibliotek"
         }
@@ -31,7 +31,7 @@
         "name": "Ope"
       },
       "staffed": {
-        "name": "Betent",
+        "name": "Bemanna",
         "state": {
           "on": "Ja",
           "off": "Nei"

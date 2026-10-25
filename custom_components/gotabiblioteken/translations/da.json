@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Opdater dine foretrukne biblioteker.",
+        "description": "Ret dine foretrukne biblioteker.",
         "data": {
           "branches": "Foretrukne biblioteker"
         }
@@ -31,7 +31,7 @@
         "name": "Åbent"
       },
       "staffed": {
-        "name": "Betjent",
+        "name": "Bemandet",
         "state": {
           "on": "Ja",
           "off": "Nej"

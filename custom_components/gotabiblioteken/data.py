@@ -89,7 +89,12 @@ AccessKey = Literal["staffed", "open"]
 
 @dataclass(frozen=True)
 class Labels:
-    """Generated text (states, attributes) in one language."""
+    """Generated text (states, attributes) in one language.
+
+    Labels and weekdays are written as they look at the start of a text
+    ("Tisdag", "Meröppet"). Mid-line (after "—" or ", ") they get a lowercase
+    first letter unless `lowercase_inline` is off, as in English and German.
+    """
 
     closed: str
     closed_today: str
@@ -101,6 +106,23 @@ class Labels:
     # In the form the date label uses (genitive/partitive where the
     # language needs it: Finnish "lokakuuta", Polish "października").
     months: tuple[str, ...]
+    lowercase_inline: bool = True
+    # How the 1st of the month is written where it isn't plain "1" (French "1er").
+    first_day: str = "1"
+    # Label/value separator (French typography: no-break space before ":").
+    colon: str = ": "
+
+    def inline(self, text: str) -> str:
+        """`text` as written in the middle of a line."""
+        return text[:1].lower() + text[1:] if self.lowercase_inline else text
+
+    def date_label(self, now: datetime) -> str:
+        """The date as it reads at the start of a text, e.g. "Tisdag 20 oktober"."""
+        return self.date_format.format(
+            weekday=self.weekdays[now.weekday()],
+            day=self.first_day if now.day == 1 else now.day,
+            month=self.months[now.month - 1],
+        )
 
 
 LABELS_EN = Labels(
@@ -109,6 +131,7 @@ LABELS_EN = Labels(
     staffed="Staffed",
     self_service="Self-service",
     date_format="{weekday} {day} {month}",
+    lowercase_inline=False,
     weekdays=(
         "Monday",
         "Tuesday",
@@ -136,7 +159,7 @@ LABELS_EN = Labels(
 
 LABELS_SV = Labels(
     closed="Stängt",
-    closed_today="Stängt idag",
+    closed_today="Stängt i dag",
     staffed="Bemannat",
     self_service="Meröppet",
     date_format="{weekday} {day} {month}",
@@ -231,7 +254,7 @@ LABELS_NB = Labels(
 LABELS_NN = Labels(
     closed="Stengt",
     closed_today="Stengt i dag",
-    staffed="Betent",
+    staffed="Bemanna",
     self_service="Meirope",
     date_format="{weekday} {day}. {month}",
     weekdays=(
@@ -262,7 +285,8 @@ LABELS_NN = Labels(
 LABELS_DA = Labels(
     closed="Lukket",
     closed_today="Lukket i dag",
-    staffed="Betjent",
+    # "Betjent" alone also means "police officer".
+    staffed="Bemandet",
     self_service="Åbent bibliotek",
     date_format="{weekday} {day}. {month}",
     weekdays=(
@@ -325,8 +349,10 @@ LABELS_DE = Labels(
     closed="Geschlossen",
     closed_today="Heute geschlossen",
     staffed="Mit Personal",
-    self_service="Selbstbedienung",
+    # The term libraries in German-speaking countries use for staff-free hours.
+    self_service="Open Library",
     date_format="{weekday}, {day}. {month}",
+    lowercase_inline=False,
     weekdays=(
         "Montag",
         "Dienstag",
@@ -356,8 +382,11 @@ LABELS_FR = Labels(
     closed="Fermé",
     closed_today="Fermé aujourd'hui",
     staffed="Avec personnel",
-    self_service="Libre-service",
+    # "Libre-service" reads as self-checkout machines in French libraries.
+    self_service="Accès autonome",
     date_format="{weekday} {day} {month}",
+    first_day="1er",
+    colon="\u00a0: ",
     weekdays=(
         "Lundi",
         "Mardi",
@@ -451,6 +480,7 @@ LABELS_IT = Labels(
     staffed="Con personale",
     self_service="Self-service",
     date_format="{weekday} {day} {month}",
+    first_day="1º",
     weekdays=(
         "Lunedì",
         "Martedì",
@@ -479,7 +509,7 @@ LABELS_IT = Labels(
 LABELS_ET = Labels(
     closed="Suletud",
     closed_today="Täna suletud",
-    staffed="Teenindusega",
+    staffed="Teenindus",
     self_service="Iseteenindus",
     date_format="{weekday}, {day}. {month}",
     weekdays=(
@@ -511,7 +541,7 @@ LABELS_LV = Labels(
     closed="Slēgts",
     closed_today="Šodien slēgts",
     staffed="Ar personālu",
-    self_service="Pašapkalpošanās",
+    self_service="Bez personāla",
     date_format="{weekday}, {day}. {month}",
     weekdays=(
         "Pirmdiena",
@@ -705,7 +735,9 @@ def _day_summary(intervals: Sequence[ApiInterval], labels: Labels) -> str:
         f"{i['from']}–{i['to']}"
         for i in sorted(intervals, key=lambda i: (i["from"], i["to"]))
     ]
-    return ", ".join(parts) if parts else labels.closed
+    if not parts:
+        return labels.closed
+    return ", ".join([parts[0], *(labels.inline(p) for p in parts[1:])])
 
 
 def compute_branch_today(
@@ -738,10 +770,7 @@ def compute_branch_today(
         "staffed" if staffed_now else ("self_service" if accessible_now else "closed")
     )
 
-    weekday = labels.weekdays[now.weekday()]
-    date_label = labels.date_format.format(
-        weekday=weekday, day=now.day, month=labels.months[now.month - 1]
-    )
+    date_label = labels.date_label(now)
 
     shifts: list[Shift] = [
         {
@@ -758,11 +787,11 @@ def compute_branch_today(
         for i in intervals
     ]
 
-    lines = [f"**{branch.strip()}** — {date_label}"]
+    lines = [f"**{branch.strip()}** — {labels.inline(date_label)}"]
     if staffed:
-        lines.append(f"{labels.staffed}: {staffed_summary}")
+        lines.append(f"{labels.staffed}{labels.colon}{staffed_summary}")
     if self_service:
-        lines.append(f"{labels.self_service}: {self_service_summary}")
+        lines.append(f"{labels.self_service}{labels.colon}{self_service_summary}")
     if not staffed and not self_service:
         lines.append(labels.closed_today)
     hours_markdown = "  \n".join(lines)
@@ -775,7 +804,7 @@ def compute_branch_today(
             "branch": branch.strip(),
             "website": website_for(branch),
             "date": date_str,
-            "weekday": weekday,
+            "weekday": labels.weekdays[now.weekday()],
             "date_label": date_label,
             "status": status,
             "staffed_summary": staffed_summary,

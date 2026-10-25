@@ -5,7 +5,7 @@
         "title": "Götabiblioteken",
         "description": "Velg favorittbibliotekene dine. Hvert bibliotek blir en enhet som viser dagens åpningstider og om biblioteket er åpent akkurat nå.",
         "data": {
-          "branches": "Favorittbibliotek"
+          "branches": "Favorittbiblioteker"
         }
       }
     },
@@ -18,9 +18,9 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Oppdater favorittbibliotekene dine.",
+        "description": "Endre favorittbibliotekene dine.",
         "data": {
-          "branches": "Favorittbibliotek"
+          "branches": "Favorittbiblioteker"
         }
       }
     }

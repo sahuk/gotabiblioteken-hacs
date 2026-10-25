@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Vali oma lemmikraamatukogud. Igaüks neist muutub seadmeks, mis näitab tänaseid lahtiolekuaegu ja seda, kas raamatukogu on praegu avatud.",
+        "description": "Vali oma lemmikraamatukogud. Igast raamatukogust saab seade, mis näitab tänaseid lahtiolekuaegu ja seda, kas raamatukogu on praegu avatud.",
         "data": {
           "branches": "Lemmikraamatukogud"
         }
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Uuenda oma lemmikraamatukogusid.",
+        "description": "Muuda oma lemmikraamatukogusid.",
         "data": {
           "branches": "Lemmikraamatukogud"
         }
@@ -31,7 +31,7 @@
         "name": "Avatud"
       },
       "staffed": {
-        "name": "Teenindusega",
+        "name": "Teenindus",
         "state": {
           "on": "Jah",
           "off": "Ei"

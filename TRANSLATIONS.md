@@ -27,7 +27,9 @@ or Latin American Spanish (`es-419`) gets English until it has its own file.
 | Lithuanian | `lt` | Baltic EU neighbor | **needs native review** |
 | Polish | `pl` | Baltic Sea EU neighbor | **needs native review** |
 
-The non-Swedish translations are drafts. If you speak one of them, please
+The non-Swedish translations are drafts. They have had one review pass by AI
+reviewers prompted in each language (wording, library terminology, date
+grammar), but not by native speakers. If you speak one of them, please
 check the setup dialog, the entity names (Open, Staffed, Opening hours) and
 the generated text, and open an issue or a pull request with corrections.
 Library names (Motala, Östra Ryd, …) are place names and are not translated.

@@ -10,7 +10,7 @@
       }
     },
     "abort": {
-      "already_configured": "Götabiblioteken är redan konfigurerat.",
+      "already_configured": "Integrationen är redan konfigurerad.",
       "cannot_connect": "Kunde inte nå API:et för öppettider."
     }
   },
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Uppdatera dina favoritbibliotek.",
+        "description": "Ändra dina favoritbibliotek.",
         "data": {
           "branches": "Favoritbibliotek"
         }

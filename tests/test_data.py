@@ -78,7 +78,7 @@ def test_split_shift_staffed_then_self_service():
     r = compute_branch_today(
         SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("15:00"), LABELS_SV
     )
-    assert r["hours"] == "09:00–14:00, Meröppet 14:00–21:00"
+    assert r["hours"] == "09:00–14:00, meröppet 14:00–21:00"
     assert r["staffed"] == {"is_on": False, "hours": "09:00–14:00"}
     assert r["open"] == {"is_on": True, "hours": "09:00–21:00"}
     a = r["attributes"]
@@ -168,7 +168,7 @@ def test_markdown_and_labels():
     assert a["date_label"] == "Tisdag 20 oktober"
     assert (
         a["hours_markdown"].splitlines()[0].strip()
-        == "**Borensbergs bibliotek** — Tisdag 20 oktober"
+        == "**Borensbergs bibliotek** — tisdag 20 oktober"
     )
     assert "Bemannat: 09:00–14:00" in a["hours_markdown"]
     assert "Meröppet: 14:00–21:00" in a["hours_markdown"]

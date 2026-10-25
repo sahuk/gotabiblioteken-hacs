@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Actualiza tus bibliotecas favoritas.",
+        "description": "Cambia tus bibliotecas favoritas.",
         "data": {
           "branches": "Bibliotecas favoritas"
         }

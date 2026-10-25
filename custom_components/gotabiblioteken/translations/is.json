@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Veldu uppáhaldsbókasöfnin þín. Hvert safn verður að tæki sem sýnir opnunartíma dagsins og hvort safnið er opið núna.",
+        "description": "Veldu uppáhaldsbókasöfnin þín. Hvert safn verður að tæki sem sýnir opnunartíma dagsins og hvort safnið sé opið núna.",
         "data": {
           "branches": "Uppáhaldsbókasöfn"
         }
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Uppfærðu uppáhaldsbókasöfnin þín.",
+        "description": "Breyttu vali á uppáhaldsbókasöfnum.",
         "data": {
           "branches": "Uppáhaldsbókasöfn"
         }

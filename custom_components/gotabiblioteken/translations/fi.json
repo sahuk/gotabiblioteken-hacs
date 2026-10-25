@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Päivitä suosikkikirjastosi.",
+        "description": "Muokkaa suosikkikirjastojasi.",
         "data": {
           "branches": "Suosikkikirjastot"
         }
@@ -31,7 +31,7 @@
         "name": "Auki"
       },
       "staffed": {
-        "name": "Henkilökunta paikalla",
+        "name": "Palveluaika",
         "state": {
           "on": "Kyllä",
           "off": "Ei"

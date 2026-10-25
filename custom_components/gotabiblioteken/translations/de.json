@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Wähle deine Lieblingsbibliotheken aus. Jede wird zu einem Gerät, das die heutigen Öffnungszeiten anzeigt und ob die Bibliothek gerade geöffnet ist.",
+        "description": "Wähle deine Lieblingsbibliotheken aus. Für jede wird ein Gerät angelegt, das die heutigen Öffnungszeiten anzeigt und angibt, ob die Bibliothek gerade geöffnet ist.",
         "data": {
           "branches": "Lieblingsbibliotheken"
         }
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Aktualisiere deine Lieblingsbibliotheken.",
+        "description": "Ändere deine Lieblingsbibliotheken.",
         "data": {
           "branches": "Lieblingsbibliotheken"
         }

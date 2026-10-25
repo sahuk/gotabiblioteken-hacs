@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Mettez à jour vos bibliothèques favorites.",
+        "description": "Modifiez vos bibliothèques favorites.",
         "data": {
           "branches": "Bibliothèques favorites"
         }
@@ -40,7 +40,7 @@
     },
     "sensor": {
       "hours": {
-        "name": "Horaires d'ouverture"
+        "name": "Horaires"
       }
     }
   }
