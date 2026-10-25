@@ -9,7 +9,8 @@ Websites come from https://www.gotabiblioteken.se/öppettider (each branch's
 "Visa alla öppettider för …" link). Where the site and the API name a
 branch differently: "Motala bibliotek" is Motala huvudbibliotek,
 "Malmslätts bibliotek" is Malmslätt bibliotek, and "Stinsen" is the
-Söderköping library (its hours sit in that section of the page).
+Söderköping library (its hours sit in that section of the page), so it is
+shown as "Söderköping".
 """
 
 from __future__ import annotations
@@ -119,7 +120,7 @@ LIBRARIES: dict[str, Library] = {
         "Skärblacka", "https://www.gotabiblioteken.se/skarblacka-bibliotek"
     ),
     "stinsen": Library(
-        "Stinsen", "https://www.gotabiblioteken.se/soderkopings-bibliotek"
+        "Söderköping", "https://www.gotabiblioteken.se/soderkopings-bibliotek"
     ),
     "sturefors bibliotek": Library(
         "Sturefors", "https://www.gotabiblioteken.se/sturefors"

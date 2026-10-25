@@ -41,6 +41,7 @@ def test_website_for_known_branch(branch, url):
         ("Sturefors bibliotek", "Sturefors"),  # -s is part of the place name
         ("Tranås stadsbibliotek", "Tranås"),
         (" Finspångs huvudbibliotek", "Finspång"),
+        ("Stinsen", "Söderköping"),  # the API's name for Söderköping's library
     ],
 )
 def test_short_name_known_branch(branch, expected):
