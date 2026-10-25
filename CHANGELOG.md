@@ -8,66 +8,40 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
-### Changed (breaking)
+## [1.0.0] - 2026-10-25
 
-- Each favorite library is now its own device with **Opening hours**
-  (`sensor.<place>_opening_hours`) and **Open**
-  (`binary_sensor.<place>_open`, an open/closed door that is open during
-  staffed or Meröppet hours). A **Staffed** sensor
-  (`binary_sensor.<place>_staffed`, Yes/No) is created disabled, for people
-  who need in-person support to enable per library. On a Swedish Home
-  Assistant the names and IDs are Swedish (Öppettider, Öppet, Bemannat).
-  Entity IDs change: the old entities are removed on upgrade (their history
-  and customizations don't carry over), so update dashboards and automations.
-- Setup no longer asks whether Meröppet counts as open: it always does. The
-  `open_now` and `include_self_service` attributes are gone.
-- The hours sensor lists all of today's shifts in time order, marking
-  self-service ones (`09:00–14:00, Self-service 14:00–21:00`).
-- States and attributes (closed, weekday, date label, shift labels, Markdown
-  block) follow Home Assistant's language: Swedish for Swedish, English
-  otherwise. They were always Swedish before.
-
-### Fixed
-
-- The door icon could say open while the listed hours said otherwise (e.g.
-  during Meröppet with staffed hours shown). Every open/closed state now
-  comes from exactly the hours it displays.
-- Removing a favorite now removes its device.
+First release.
 
 ### Added
 
-- 14 more languages: Finnish, Norwegian (Bokmål and Nynorsk), Danish,
-  Icelandic, German, French, Spanish, Portuguese, Italian, Estonian, Latvian,
-  Lithuanian and Polish. Each covers entity names, the setup dialog, and
-  generated text (closed, weekdays, months, date format, self-service label).
-  Generated text follows each language's conventions: lowercase weekdays and
-  labels mid-line where the language writes them so, French "1er" and
-  "Avec personnel : …", Italian "1º". Drafts flagged for native review in
-  `TRANSLATIONS.md`, which also tracks Sweden's other minority languages
-  (waiting on Home Assistant support).
-- Library devices use a short place name ("Motala", "Borensberg",
-  "Agora") so entity names start with what tells libraries apart and stay
-  readable when a dashboard card cuts them off ("Motala Open"). The full name
-  stays in the `branch` attribute.
-- Each library links to its page on gotabiblioteken.se: the device's
-  **Visit** link and a `website` attribute on the hours sensor.
-- `scripts/type_coverage.py`: measures how much of the code mypy types
-  precisely (no `Any`), gated at 97% in CI. The API payload and computed
-  results are now `TypedDict`s.
-- UX persona and user story: open-by-default, with staffed hours as opt-in
-  for people who need in-person support (`docs/ux/personas.md`).
-- Static checks: ruff (lint + format) and strict mypy, locally and in CI.
-- HACS and hassfest validation in CI, plus local repo-convention tests.
-- Release workflow that verifies the tag against the manifest and attaches
-  `gotabiblioteken.zip`; `scripts/bump_version.py` for version bumps.
-- Brand icon (`brand/icon.png`) from the Götabiblioteken logo.
-- MIT license.
-- Dev dependencies managed with uv (`pyproject.toml` + `uv.lock`).
-
-## [1.0.0] - 2026-10-20
-
-### Added
-
-- GUI-installable custom integration: pick favorite libraries in a config
-  flow; each becomes an "opening hours today" sensor with shift-level
-  attributes, polled every 3 hours and recomputed locally every minute.
+- GUI setup: pick your favorite Götabiblioteken libraries; change them later
+  with **Configure** (removing a favorite removes its device). Opening hours
+  are fetched from the Axiell API every 3 hours and states are recomputed
+  locally every minute.
+- One device per library, named by its short place name ("Motala",
+  "Borensberg", "Söderköping") so entity names start with what tells
+  libraries apart on a dashboard ("Motala Open"):
+  - **Opening hours** (`sensor.<place>_opening_hours`): today's shifts in
+    time order, self-service ones marked
+    (`09:00–14:00, Self-service 14:00–21:00`), or `Closed`.
+  - **Open** (`binary_sensor.<place>_open`): an open/closed door, open
+    whenever you can get in, staffed or Meröppet.
+  - **Staffed** (`binary_sensor.<place>_staffed`, Yes/No): created disabled,
+    for people who need in-person support to enable per library.
+  - Every open/closed state comes from exactly the hours it displays.
+  - Attributes with shifts, summaries, a date label, the full branch name,
+    and `hours_markdown` for a Markdown card; a **Visit** link and `website`
+    attribute to the library's page on gotabiblioteken.se.
+- 16 languages, following Home Assistant's language: Swedish, English,
+  Finnish, Norwegian (Bokmål and Nynorsk), Danish, Icelandic, German,
+  French, Spanish, Portuguese, Italian, Estonian, Latvian, Lithuanian and
+  Polish, with English for any other language. Entity names, setup dialog
+  and generated text (closed, weekdays, months, date format, self-service
+  label) follow each language's conventions. Non-Swedish translations are
+  flagged for native review in `TRANSLATIONS.md`, which also tracks
+  Sweden's other minority languages (waiting on Home Assistant support).
+- HACS distribution with a brand icon and MIT license; releases attach
+  `gotabiblioteken.zip`.
+- Development: uv-managed dev tools, pytest, ruff, strict mypy with a type
+  coverage gate, HACS/hassfest validation and repo-convention tests in CI,
+  a UX persona spec (`docs/ux/personas.md`) and `scripts/bump_version.py`.
