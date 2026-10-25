@@ -38,6 +38,34 @@ SELF_SERVICE_ONLY: ApiPayload = {
 }
 
 
+def _one_branch(name: object, opening_hours: object) -> ApiPayload:
+    # Deliberately ill-typed: models what a broken or hostile API could send.
+    payload: ApiPayload = {
+        "dates": [
+            {
+                "date": "2026-10-20",
+                "branches": [{"branchName": name, "openingHours": opening_hours}],  # type: ignore[typeddict-item]
+            }
+        ]
+    }
+    return payload
+
+
+MALFORMED_INTERVALS: list[object] = [
+    {"serviceType": "Staffed", "from": "10:00"},
+    {"serviceType": "Staffed", "from": None, "to": "19:00"},
+    {"serviceType": "Staffed", "from": "9:00", "to": "19:00"},
+    {"serviceType": "Staffed", "from": "10:00", "to": "25:00"},
+    {"serviceType": "Staffed", "from": "10:60", "to": "19:00"},
+    {"serviceType": "Staffed", "from": 1000, "to": 1900},
+    {"serviceType": "Staffed", "from": "10:00", "to": "19:00 "},
+    {"serviceType": ["x"], "info": {"x": 1}, "from": "10:00", "to": "11:00"},
+    "10:00-19:00",
+    None,
+    ["10:00", "19:00"],
+]
+
+
 def _at(hm: str) -> datetime:
     return datetime.strptime(f"2026-10-20 {hm}", "%Y-%m-%d %H:%M")
 
@@ -217,6 +245,7 @@ def _within(hours: str, hm: str) -> bool:
         (SAMPLE_PAYLOAD, "Motala bibliotek"),
         (SAMPLE_PAYLOAD, "Does Not Exist"),
         (SELF_SERVICE_ONLY, "Ekängens bibliotek"),
+        (_one_branch("Trasigt bibliotek", MALFORMED_INTERVALS), "Trasigt bibliotek"),
     ],
 )
 def test_open_state_always_matches_displayed_hours(payload, branch):
@@ -229,3 +258,85 @@ def test_open_state_always_matches_displayed_hours(payload, branch):
             block = r[key]
             assert block["is_on"] is _within(block["hours"], hm), (key, hm)
         now += timedelta(minutes=1)
+
+
+def test_malformed_intervals_are_dropped():
+    good = {"serviceType": "Staffed", "from": "12:00", "to": "13:00"}
+    payload = _one_branch("Trasigt bibliotek", [*MALFORMED_INTERVALS, good])
+    r = compute_branch_today(payload, "Trasigt bibliotek", _at("12:30"))
+    assert r["staffed"] == {"is_on": True, "hours": "12:00–13:00"}
+    shifts = r["attributes"]["shifts"]
+    # The ill-typed serviceType/info interval keeps its valid times only.
+    assert [(s["from"], s["to"], s["service_type"], s["info"]) for s in shifts] == [
+        ("10:00", "11:00", None, None),
+        ("12:00", "13:00", "Staffed", None),
+    ]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"dates": None},
+        {"dates": "nope"},
+        {"dates": [None, 1, "x"]},
+        {"dates": [{"date": "2026-10-20", "branches": None}]},
+        {"dates": [{"date": "2026-10-20", "branches": [None, 1]}]},
+        _one_branch("Trasigt bibliotek", None),
+        _one_branch("Trasigt bibliotek", {"from": "10:00", "to": "19:00"}),
+        _one_branch("Trasigt bibliotek", MALFORMED_INTERVALS[:7]),
+        _one_branch(42, [{"serviceType": "Staffed", "from": "10:00", "to": "19:00"}]),
+    ],
+)
+def test_malformed_payload_is_closed(payload):
+    r = compute_branch_today(payload, "Trasigt bibliotek", _at("12:00"))
+    assert r["open"] == {"is_on": False, "hours": "Closed"}
+    assert r["attributes"]["status"] == "closed"
+    assert r["attributes"]["shifts"] == []
+    assert branch_names(payload) in ([], ["Trasigt bibliotek"])
+
+
+def test_branch_names_skip_non_string_names():
+    payload: ApiPayload = {
+        "dates": [
+            {
+                "date": "2026-10-20",
+                "branches": [
+                    {"branchName": 42},  # type: ignore[typeddict-item]
+                    {"branchName": None},  # type: ignore[typeddict-item]
+                    {},
+                    {"branchName": " Motala bibliotek "},
+                ],
+            }
+        ]
+    }
+    assert branch_names(payload) == ["Motala bibliotek"]
+
+
+def test_hostile_branch_name_is_escaped_in_markdown():
+    name = "[x](javascript:alert(1)) <img src=x>\n# *h*"
+    payload = _one_branch(
+        name, [{"serviceType": "Staffed", "from": "10:00", "to": "19:00"}]
+    )
+    markdown = compute_branch_today(payload, name, _at("12:00"))["attributes"][
+        "hours_markdown"
+    ]
+    first = markdown.splitlines()[0]
+    assert first.startswith(
+        "**\\[x\\]\\(javascript:alert\\(1\\)\\) \\<img src=x\\> \\# \\*h\\*** — "
+    )
+    # Every metacharacter is backslash-escaped, so no link, image or HTML.
+    unescaped = [
+        c for i, c in enumerate(first) if c in "[]()<>" and first[i - 1] != "\\"
+    ]
+    assert unescaped == []
+
+
+@pytest.mark.parametrize(
+    "name", ["Borensbergs bibliotek", "Mjölby bibliotek", "Östra Ryd"]
+)
+def test_normal_branch_names_unchanged_in_markdown(name):
+    markdown = compute_branch_today(SAMPLE_PAYLOAD, name, _at("12:00"))["attributes"][
+        "hours_markdown"
+    ]
+    assert markdown.startswith(f"**{name}** — ")

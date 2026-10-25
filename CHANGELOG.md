@@ -8,6 +8,20 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Security
+
+- API responses over 1 MiB are refused before parsing, and the response
+  must be a JSON object.
+- Malformed opening hours from the API (missing, mistyped or non-`HH:MM`
+  times, entries of the wrong type) are skipped and treated as closed
+  instead of raising errors in the entities.
+- Library names are Markdown-escaped in `hours_markdown`, so a name can't
+  inject links, images or HTML into a dashboard Markdown card.
+- CI: actions pinned to commit SHAs; read-only token for test and validate
+  workflows; the release workflow keeps the release tag out of shell
+  interpolation, doesn't persist its write token during checks, and only
+  releases commits that are on `master`.
+
 ## [1.0.0] - 2026-10-25
 
 First release.
