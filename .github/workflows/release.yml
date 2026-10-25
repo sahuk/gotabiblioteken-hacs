@@ -19,7 +19,7 @@ jobs:
             echo "::error::tag ${{ github.event.release.tag_name }} != v${version} from manifest.json"
             exit 1
           fi
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.0
       - name: Checks
         run: |
           uv sync --locked
