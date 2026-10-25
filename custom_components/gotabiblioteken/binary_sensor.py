@@ -18,9 +18,10 @@ from .coordinator import GotaCoordinator
 from .data import AccessKey
 from .entity import GotaBranchEntity, favorite_branches
 
-# "staffed": someone is working there. "self_service": a cardholder can get in
-# (Meröppet or staffed hours).
-KEYS: tuple[AccessKey, ...] = ("staffed", "self_service")
+# "open": you can get in (staffed or Meröppet hours), the everyday answer.
+# "staffed": someone is working there; for people who need in-person help,
+# so it is created disabled and enabled per library by those who want it.
+KEYS: tuple[AccessKey, ...] = ("open", "staffed")
 
 
 async def async_setup_entry(
@@ -28,7 +29,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Create the Bemannat and Meröppet sensors for each favorite library."""
+    """Create the Öppet and Bemannat sensors for each favorite library."""
     coordinator: GotaCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         LibraryOpenSensor(coordinator, entry, branch, key)
@@ -49,11 +50,13 @@ class LibraryOpenSensor(GotaBranchEntity, BinarySensorEntity):
     ) -> None:
         super().__init__(coordinator, entry, branch, key)
         self._key = key
-        # Meröppet is about getting in, so it reads as an open/closed door.
+        # Öppet is about getting in, so it reads as an open/closed door.
         # Bemannat reads Ja/Nej (state translations): showing "closed" while
         # the library is open for Meröppet would be wrong.
-        if key == "self_service":
+        if key == "open":
             self._attr_device_class = BinarySensorDeviceClass.DOOR
+        else:
+            self._attr_entity_registry_enabled_default = False
 
     @property
     def is_on(self) -> bool:

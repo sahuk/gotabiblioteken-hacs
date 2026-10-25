@@ -23,8 +23,8 @@ BORENSBERG = "Borensbergs bibliotek"
 MOTALA = "Motala bibliotek"
 PLATFORM_BY_KEY = {
     "hours": "sensor",
+    "open": "binary_sensor",
     "staffed": "binary_sensor",
-    "self_service": "binary_sensor",
 }
 
 
@@ -74,10 +74,12 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     devices = dr.async_entries_for_config_entry(dev_reg, entry.entry_id)
     assert sorted(str(d.name) for d in devices) == [BORENSBERG, MOTALA]
     for device in devices:
-        entities = er.async_entries_for_device(ent_reg, device.id)
+        entities = er.async_entries_for_device(
+            ent_reg, device.id, include_disabled_entities=True
+        )
         assert sorted(str(e.translation_key) for e in entities) == [
             "hours",
-            "self_service",
+            "open",
             "staffed",
         ]
 
@@ -85,24 +87,37 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     assert _entity_id(hass, entry, MOTALA, "hours") == (
         "sensor.motala_bibliotek_opening_hours"
     )
-    assert _entity_id(hass, entry, MOTALA, "self_service") == (
-        "binary_sensor.motala_bibliotek_self_service_access"
+    assert _entity_id(hass, entry, MOTALA, "open") == (
+        "binary_sensor.motala_bibliotek_open"
     )
 
     hours = _state(hass, entry, MOTALA, "hours")
     assert hours.state == "10:00–19:00"
     assert hours.attributes["branch"] == MOTALA
     assert hours.attributes["status"] == "staffed"
-    assert _state(hass, entry, MOTALA, "staffed").state == "on"
-    # Bemannat is Ja/Nej, not a door; only Meröppet is about getting in.
-    assert "device_class" not in _state(hass, entry, MOTALA, "staffed").attributes
-    assert (
-        _state(hass, entry, MOTALA, "self_service").attributes["device_class"] == "door"
-    )
+    assert _state(hass, entry, MOTALA, "open").state == "on"
+    assert _state(hass, entry, MOTALA, "open").attributes["device_class"] == "door"
+
+    # Bemannat is opt-in for people who need in-person help: created disabled.
+    staffed = ent_reg.async_get(_entity_id(hass, entry, MOTALA, "staffed"))
+    assert staffed is not None
+    assert staffed.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+    assert hass.states.get(staffed.entity_id) is None
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
+async def test_enabled_staffed_sensor_is_yes_no_not_a_door(
+    hass: HomeAssistant,
+) -> None:
+    entry = await _setup(hass, _entry([MOTALA]))
+    staffed = _state(hass, entry, MOTALA, "staffed")
+    assert staffed.state == "on"
+    assert "device_class" not in staffed.attributes
+
+
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 @pytest.mark.parametrize(
-    ("now", "staffed", "self_service"),
+    ("now", "staffed", "open_"),
     [
         ("2026-10-20 12:00:00", "on", "on"),  # staffed 09–14
         ("2026-10-20 15:00:00", "off", "on"),  # Meröppet 14–21
@@ -110,7 +125,7 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     ],
 )
 async def test_open_states_through_the_day(
-    hass: HomeAssistant, now: str, staffed: str, self_service: str
+    hass: HomeAssistant, now: str, staffed: str, open_: str
 ) -> None:
     entry = await _setup(hass, _entry([BORENSBERG]), now=now)
 
@@ -120,9 +135,9 @@ async def test_open_states_through_the_day(
     staffed_state = _state(hass, entry, BORENSBERG, "staffed")
     assert staffed_state.state == staffed
     assert staffed_state.attributes["hours"] == "09:00–14:00"
-    self_service_state = _state(hass, entry, BORENSBERG, "self_service")
-    assert self_service_state.state == self_service
-    assert self_service_state.attributes["hours"] == "09:00–21:00"
+    open_state = _state(hass, entry, BORENSBERG, "open")
+    assert open_state.state == open_
+    assert open_state.attributes["hours"] == "09:00–21:00"
 
 
 async def test_removing_favorite_removes_its_device(hass: HomeAssistant) -> None:
@@ -175,7 +190,7 @@ async def test_migrates_v1_entry(hass: HomeAssistant) -> None:
     assert er.async_get(hass).async_get(old_entity.entity_id) is None
     devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
     assert [d.name for d in devices] == [BORENSBERG]
-    assert _state(hass, entry, BORENSBERG, "staffed").state == "on"
+    assert _state(hass, entry, BORENSBERG, "open").state == "on"
 
 
 async def test_unload(hass: HomeAssistant) -> None:

@@ -74,11 +74,11 @@ class BranchAttributes(TypedDict):
 class BranchToday(TypedDict):
     hours: str
     staffed: Access
-    self_service: Access
+    open: Access
     attributes: BranchAttributes
 
 
-AccessKey = Literal["staffed", "self_service"]
+AccessKey = Literal["staffed", "open"]
 
 WEEKDAYS_SV = [
     "Måndag",
@@ -191,8 +191,9 @@ def compute_branch_today(
     """Compute today's hours and open/closed states for one branch.
 
     Each open/closed block is derived from exactly the intervals its `hours`
-    string lists, so the two can never disagree. `self_service` answers "can a
-    cardholder get in", which is true during staffed hours as well.
+    string lists, so the two can never disagree. `open` answers "can I get
+    in", which is true during staffed and Meröppet hours alike; `staffed` is
+    the narrower "is someone working there".
     """
     date_str = now.strftime("%Y-%m-%d")
     now_hm = now.strftime("%H:%M")
@@ -236,7 +237,7 @@ def compute_branch_today(
     return {
         "hours": _day_summary(staffed + self_service),
         "staffed": {"is_on": staffed_now, "hours": staffed_summary},
-        "self_service": {"is_on": accessible_now, "hours": _summary(accessible)},
+        "open": {"is_on": accessible_now, "hours": _summary(accessible)},
         "attributes": {
             "branch": branch.strip(),
             "date": date_str,

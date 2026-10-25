@@ -27,15 +27,15 @@
   },
   "entity": {
     "binary_sensor": {
+      "open": {
+        "name": "Open"
+      },
       "staffed": {
         "name": "Staffed",
         "state": {
           "on": "Yes",
           "off": "No"
         }
-      },
-      "self_service": {
-        "name": "Self-service access"
       }
     },
     "sensor": {

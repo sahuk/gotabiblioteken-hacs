@@ -27,15 +27,15 @@
   },
   "entity": {
     "binary_sensor": {
+      "open": {
+        "name": "Öppet"
+      },
       "staffed": {
         "name": "Bemannat",
         "state": {
           "on": "Ja",
           "off": "Nej"
         }
-      },
-      "self_service": {
-        "name": "Meröppet"
       }
     },
     "sensor": {

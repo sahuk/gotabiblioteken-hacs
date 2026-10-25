@@ -75,7 +75,7 @@ def test_split_shift_staffed_then_self_service():
     r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("15:00"))
     assert r["hours"] == "09:00–14:00, Meröppet 14:00–21:00"
     assert r["staffed"] == {"is_on": False, "hours": "09:00–14:00"}
-    assert r["self_service"] == {"is_on": True, "hours": "09:00–21:00"}
+    assert r["open"] == {"is_on": True, "hours": "09:00–21:00"}
     a = r["attributes"]
     assert a["staffed_summary"] == "09:00–14:00"
     assert a["self_service_summary"] == "14:00–21:00"
@@ -86,7 +86,7 @@ def test_split_shift_staffed_then_self_service():
 def test_staffed_hours_count_as_cardholder_access():
     r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"))
     assert r["staffed"]["is_on"] is True
-    assert r["self_service"]["is_on"] is True
+    assert r["open"]["is_on"] is True
     assert r["attributes"]["status"] == "staffed"
 
 
@@ -94,7 +94,7 @@ def test_self_service_only_branch():
     r = compute_branch_today(SELF_SERVICE_ONLY, "Ekängens bibliotek", _at("20:00"))
     assert r["hours"] == "Meröppet 07:00–22:00"
     assert r["staffed"] == {"is_on": False, "hours": "Stängt"}
-    assert r["self_service"] == {"is_on": True, "hours": "07:00–22:00"}
+    assert r["open"] == {"is_on": True, "hours": "07:00–22:00"}
 
 
 def test_shift_ending_at_midnight():
@@ -119,7 +119,7 @@ def test_shift_ending_at_midnight():
         ]
     }
     r = compute_branch_today(payload, "Sent bibliotek", _at("23:30"))
-    assert r["self_service"] == {"is_on": True, "hours": "10:00–24:00"}
+    assert r["open"] == {"is_on": True, "hours": "10:00–24:00"}
 
 
 def test_hours_listed_in_time_order():
@@ -141,7 +141,7 @@ def test_missing_branch_is_closed_everywhere():
     r = compute_branch_today(SAMPLE_PAYLOAD, "Does Not Exist", _at("12:00"))
     assert r["hours"] == "Stängt"
     assert r["staffed"] == {"is_on": False, "hours": "Stängt"}
-    assert r["self_service"] == {"is_on": False, "hours": "Stängt"}
+    assert r["open"] == {"is_on": False, "hours": "Stängt"}
     assert r["attributes"]["status"] == "closed"
     assert r["attributes"]["shifts"] == []
 
@@ -187,7 +187,7 @@ def test_open_state_always_matches_displayed_hours(payload, branch):
     for _ in range(24 * 60):
         r = compute_branch_today(payload, branch, now)
         hm = now.strftime("%H:%M")
-        for key in ("staffed", "self_service"):
+        for key in ("staffed", "open"):
             block = r[key]
             assert block["is_on"] is _within(block["hours"], hm), (key, hm)
         now += timedelta(minutes=1)

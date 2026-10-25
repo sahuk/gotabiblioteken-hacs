@@ -46,7 +46,7 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if entry.version == 1:
         # v1 had one shared device and one sensor per library, plus a setup
         # toggle for counting Meröppet as open. v2 makes a device per library
-        # with separate Bemannat/Meröppet sensors, so drop the toggle and the
+        # with separate Öppet/Bemannat sensors, so drop the toggle and the
         # old entities. Setup recreates them and detaches the old shared
         # device as stale.
         removed = "include_self_service"

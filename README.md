@@ -8,11 +8,12 @@ Home Assistant integration for **library opening hours** from
 consortium), served by the Axiell JSON API.
 
 Pick your favorite libraries from a dropdown and each one becomes a device
-that answers, at a glance: what are today's hours, is it **staffed** right
-now (`Bemannat`), and can you get in with your library card right now
-(`Meröppet`)? Both answers are always there, with no mode to choose at
-setup, so a household that uses both staffed and self-service hours sees
-everything in one place (see [docs/ux/personas.md](docs/ux/personas.md)).
+that answers, at a glance: what are today's hours, and is the library
+**open** right now (`Öppet`), counting both staffed and Meröppet
+(self-service) hours? For people who need in-person help, such as kids or
+the elderly, each library also has an opt-in **staffed** sensor
+(`Bemannat`). There is no mode to choose at setup (see
+[docs/ux/personas.md](docs/ux/personas.md)).
 
 ## Installation
 
@@ -50,17 +51,21 @@ disappear along with their device.
 ## What each library gives you
 
 Entity IDs below assume Home Assistant is set to Swedish; with another
-language the suffixes follow that language (e.g. `_opening_hours`, `_staffed`,
-`_self_service_access`).
+language the suffixes follow that language (e.g. `_opening_hours`, `_open`,
+`_staffed`).
 
 | Entity | State | Attributes |
 | --- | --- | --- |
 | `sensor.<library>_oppettider` | today's shifts in time order, e.g. `09:00–14:00, Meröppet 14:00–21:00`, or `Stängt` | see below |
-| `binary_sensor.<library>_bemannat` | `on` (open) while staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
-| `binary_sensor.<library>_meroppet` | `on` (open) whenever a cardholder can get in: Meröppet **or** staffed hours | `hours`: the combined access window, e.g. `09:00–21:00` |
+| `binary_sensor.<library>_oppet` | open/closed (door): open whenever you can get in, during staffed **or** Meröppet hours | `hours`: the combined opening window, e.g. `09:00–21:00` |
+| `binary_sensor.<library>_bemannat` | **disabled by default.** `Ja`/`Nej`: whether staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
 
-Each open/closed sensor is on exactly when the current time falls inside its
-own `hours` attribute, so the door icon never disagrees with the hours shown.
+Each of these is on exactly when the current time falls inside its own
+`hours` attribute, so the state never disagrees with the hours shown.
+
+To get the staffed sensor for a library, open the library's device under
+**Settings → Devices & services → Götabiblioteken**, select the `Bemannat`
+entity, and turn on **Enabled** in its settings.
 
 Attributes of the hours sensor:
 
@@ -104,8 +109,8 @@ type: entities
 title: Motala bibliotek
 entities:
   - sensor.motala_bibliotek_oppettider
-  - binary_sensor.motala_bibliotek_bemannat
-  - binary_sensor.motala_bibliotek_meroppet
+  - binary_sensor.motala_bibliotek_oppet
+  - binary_sensor.motala_bibliotek_bemannat  # once enabled
 ```
 
 ## API notes
