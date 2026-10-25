@@ -430,7 +430,7 @@ LABELS_ES = Labels(
     closed_today="Cerrado hoy",
     staffed="Con personal",
     self_service="Autoservicio",
-    not_staffed="Sin personal",
+    not_staffed="Solo autoservicio",
     date_format="{weekday}, {day} de {month}",
     weekdays=(
         "Lunes",
@@ -527,7 +527,7 @@ LABELS_ET = Labels(
     closed_today="Täna suletud",
     staffed="Teenindus",
     self_service="Iseteenindus",
-    not_staffed="Teeninduseta",
+    not_staffed="Ainult iseteenindus",
     date_format="{weekday}, {day}. {month}",
     weekdays=(
         "Esmaspäev",
