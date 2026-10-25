@@ -8,6 +8,8 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-25
+
 ### Added
 
 - **Staffed hours** sensor (`sensor.<place>_staffed_hours`), created disabled
