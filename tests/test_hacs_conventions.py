@@ -112,6 +112,11 @@ def test_translations_match_strings(integration_dir: Path) -> None:
     ), "en.json must be a copy of strings.json"
 
 
+def test_license_present() -> None:
+    """HACS fails validation without a repository license."""
+    assert (ROOT / "LICENSE").read_text(encoding="utf-8").strip()
+
+
 def test_changelog_has_current_version(manifest: dict[str, Any]) -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     heading = f"## [{manifest['version']}]"

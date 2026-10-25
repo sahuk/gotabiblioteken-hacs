@@ -15,6 +15,7 @@ release is tagged `v<version>`.
 - Release workflow that verifies the tag against the manifest and attaches
   `gotabiblioteken.zip`; `scripts/bump_version.py` for version bumps.
 - Brand icon (`brand/icon.png`) from the Götabiblioteken logo.
+- MIT license.
 
 ## [1.0.0] - 2026-10-20
 
