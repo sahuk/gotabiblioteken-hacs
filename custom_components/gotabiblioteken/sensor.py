@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
@@ -63,7 +64,7 @@ class LibraryHoursSensor(CoordinatorEntity[GotaCoordinator], SensorEntity):
             manufacturer="Axiell",
             entry_type=DeviceEntryType.SERVICE,
         )
-        self._unsub_timer = None
+        self._unsub_timer: CALLBACK_TYPE | None = None
 
     def _compute(self) -> dict[str, Any]:
         payload = self.coordinator.data or {}
@@ -73,11 +74,13 @@ class LibraryHoursSensor(CoordinatorEntity[GotaCoordinator], SensorEntity):
 
     @property
     def native_value(self) -> str:
-        return self._compute()["state"]
+        state: str = self._compute()["state"]
+        return state
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        return self._compute()["attributes"]
+        attributes: dict[str, Any] = self._compute()["attributes"]
+        return attributes
 
     @property
     def icon(self) -> str:
@@ -100,5 +103,5 @@ class LibraryHoursSensor(CoordinatorEntity[GotaCoordinator], SensorEntity):
             self._unsub_timer = None
 
     @callback
-    def _handle_local_refresh(self, _now) -> None:
+    def _handle_local_refresh(self, _now: datetime) -> None:
         self.async_write_ha_state()

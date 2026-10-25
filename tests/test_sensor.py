@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, patch
 
 from freezegun import freeze_time
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import slugify
@@ -45,9 +46,11 @@ async def _setup(
     return entry
 
 
-def _entity_id(hass: HomeAssistant, entry, branch: str) -> str | None:
+def _entity_id(hass: HomeAssistant, entry, branch: str) -> str:
     unique_id = f"{entry.entry_id}_{slugify(branch)}"
-    return er.async_get(hass).async_get_entity_id("sensor", DOMAIN, unique_id)
+    entity_id = er.async_get(hass).async_get_entity_id("sensor", DOMAIN, unique_id)
+    assert entity_id is not None, f"no sensor registered for {branch}"
+    return entity_id
 
 
 async def test_sensor_created_per_favorite(hass: HomeAssistant) -> None:

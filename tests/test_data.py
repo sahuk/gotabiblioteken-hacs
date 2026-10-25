@@ -22,7 +22,9 @@ def test_branch_names_union_and_dedupe():
 
 
 def test_split_shift_staffed_then_self_service():
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", True, _at("15:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, "Borensbergs bibliotek", True, _at("15:00")
+    )
     a = r["attributes"]
     assert r["state"] == "09:00–14:00"
     assert a["staffed_summary"] == "09:00–14:00"
@@ -33,7 +35,9 @@ def test_split_shift_staffed_then_self_service():
 
 
 def test_self_service_excluded_when_disabled():
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", False, _at("15:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, "Borensbergs bibliotek", False, _at("15:00")
+    )
     assert r["attributes"]["open_now"] is False  # only self-service open at 15:00
 
 
@@ -62,6 +66,9 @@ def test_markdown_and_labels():
     assert a["date"] == "2026-10-20"
     assert a["weekday"] == "Tisdag"
     assert a["date_label"] == "Tisdag 20 oktober"
-    assert a["hours_markdown"].splitlines()[0].strip() == "**Borensbergs bibliotek** — Tisdag 20 oktober"
+    assert (
+        a["hours_markdown"].splitlines()[0].strip()
+        == "**Borensbergs bibliotek** — Tisdag 20 oktober"
+    )
     assert "Bemannat: 09:00–14:00" in a["hours_markdown"]
     assert "Meröppet: 14:00–21:00" in a["hours_markdown"]

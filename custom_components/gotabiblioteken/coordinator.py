@@ -31,5 +31,5 @@ class GotaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         try:
             return await async_fetch_dates(self._session)
-        except Exception as err:  # noqa: BLE001 - surfaced as UpdateFailed
+        except Exception as err:  # surfaced as UpdateFailed
             raise UpdateFailed(f"Error fetching opening hours: {err}") from err

@@ -1,2 +1,0 @@
-# Pulls in a matching Home Assistant pin as a dependency.
-pytest-homeassistant-custom-component==0.13.316

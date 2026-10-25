@@ -18,11 +18,16 @@ async def async_fetch_dates(
 ) -> dict[str, Any]:
     """Fetch the raw opening-hours payload (today plus `days - 1` more)."""
     url = API_URL.format(customer_id=customer_id)
-    params = {"locale": "sv_SE", "daysFromNow": 0, "numOfDays": days}
+    params: dict[str, str | int] = {
+        "locale": "sv_SE",
+        "daysFromNow": 0,
+        "numOfDays": days,
+    }
     async with asyncio.timeout(20):
         async with session.get(url, params=params) as resp:
             resp.raise_for_status()
-            return await resp.json()
+            payload: dict[str, Any] = await resp.json()
+            return payload
 
 
 async def async_fetch_branch_names(
