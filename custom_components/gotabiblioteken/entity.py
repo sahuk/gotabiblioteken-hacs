@@ -14,6 +14,7 @@ from homeassistant.util import dt as dt_util, slugify
 from .const import CONF_BRANCHES, DOMAIN, LOCAL_REFRESH_INTERVAL
 from .coordinator import GotaCoordinator
 from .data import BranchToday, compute_branch_today, labels_for
+from .websites import website_for
 
 
 def favorite_branches(entry: ConfigEntry) -> list[str]:
@@ -47,6 +48,7 @@ class GotaBranchEntity(CoordinatorEntity[GotaCoordinator]):
             identifiers={(DOMAIN, branch_device_id(entry, branch))},
             name=branch.strip(),
             manufacturer="Axiell",
+            configuration_url=website_for(branch),
             entry_type=DeviceEntryType.SERVICE,
         )
         self._unsub_timer: CALLBACK_TYPE | None = None

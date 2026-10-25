@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal, TypedDict
 
+from .websites import website_for
+
 # Shape of the Axiell payload. Every key is optional: the API is external,
 # so the code reads it with .get() and treats missing data as closed.
 ApiInterval = TypedDict(
@@ -64,6 +66,7 @@ class Access(TypedDict):
 
 class BranchAttributes(TypedDict):
     branch: str
+    website: str
     date: str
     weekday: str
     date_label: str
@@ -292,6 +295,7 @@ def compute_branch_today(
         "open": {"is_on": accessible_now, "hours": _summary(accessible, labels)},
         "attributes": {
             "branch": branch.strip(),
+            "website": website_for(branch),
             "date": date_str,
             "weekday": weekday,
             "date_label": date_label,

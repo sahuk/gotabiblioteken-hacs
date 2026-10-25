@@ -43,7 +43,8 @@ Go to **Settings → Devices & services → + Add integration** and search for
    fetched live from the API).
 2. Submit.
 
-Each favorite becomes a device named after the library. Change your favorites
+Each favorite becomes a device named after the library, with a **Visit**
+link to the library's page on gotabiblioteken.se. Change your favorites
 any time with the integration's **Configure** button; libraries you remove
 disappear along with their device.
 
@@ -73,6 +74,7 @@ Attributes of the hours sensor:
 | Attribute              | Example                                             |
 | ---------------------- | --------------------------------------------------- |
 | `branch`               | `Linköpings huvudbibliotek`                         |
+| `website`              | `https://www.gotabiblioteken.se/linkoping-huvudbibliotek` |
 | `date` / `date_label`  | `2026-10-20` / `Tuesday 20 October`                 |
 | `weekday`              | `Tuesday`                                           |
 | `status`               | `staffed` \| `self_service` \| `closed`             |

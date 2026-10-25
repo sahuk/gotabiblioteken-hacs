@@ -36,6 +36,8 @@ release is tagged `v<version>`.
 
 ### Added
 
+- Each library links to its page on gotabiblioteken.se: the device's
+  **Visit** link and a `website` attribute on the hours sensor.
 - `scripts/type_coverage.py`: measures how much of the code mypy types
   precisely (no `Any`), gated at 97% in CI. The API payload and computed
   results are now `TypedDict`s.

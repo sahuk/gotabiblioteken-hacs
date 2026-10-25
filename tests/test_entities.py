@@ -73,6 +73,11 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     ent_reg = er.async_get(hass)
     devices = dr.async_entries_for_config_entry(dev_reg, entry.entry_id)
     assert sorted(str(d.name) for d in devices) == [BORENSBERG, MOTALA]
+    # Each device links to the library's own page ("Visit" in the device view).
+    assert {d.name: d.configuration_url for d in devices} == {
+        BORENSBERG: "https://www.gotabiblioteken.se/borensbergs-bibliotek",
+        MOTALA: "https://www.gotabiblioteken.se/motala-huvudbibliotek",
+    }
     for device in devices:
         entities = er.async_entries_for_device(
             ent_reg, device.id, include_disabled_entities=True
@@ -94,6 +99,9 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     hours = _state(hass, entry, MOTALA, "hours")
     assert hours.state == "10:00–19:00"
     assert hours.attributes["branch"] == MOTALA
+    assert hours.attributes["website"] == (
+        "https://www.gotabiblioteken.se/motala-huvudbibliotek"
+    )
     assert hours.attributes["status"] == "staffed"
     assert _state(hass, entry, MOTALA, "open").state == "on"
     assert _state(hass, entry, MOTALA, "open").attributes["device_class"] == "door"
