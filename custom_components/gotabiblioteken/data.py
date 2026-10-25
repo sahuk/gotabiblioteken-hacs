@@ -1,6 +1,8 @@
 """Pure opening-hours computation.
 
 No Home Assistant imports on purpose: this module is unit-testable on its own.
+Generated text is Swedish or English (`labels_for`); entity names are not set
+here but come from the translation files.
 Merges duplicate branch entries, de-duplicates identical shifts, and splits
 staffed from self-service hours.
 """
@@ -8,6 +10,7 @@ staffed from self-service hours.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal, TypedDict
 
@@ -80,32 +83,75 @@ class BranchToday(TypedDict):
 
 AccessKey = Literal["staffed", "open"]
 
-WEEKDAYS_SV = [
-    "Måndag",
-    "Tisdag",
-    "Onsdag",
-    "Torsdag",
-    "Fredag",
-    "Lördag",
-    "Söndag",
-]
 
-MONTHS_SV = [
-    "januari",
-    "februari",
-    "mars",
-    "april",
-    "maj",
-    "juni",
-    "juli",
-    "augusti",
-    "september",
-    "oktober",
-    "november",
-    "december",
-]
+@dataclass(frozen=True)
+class Labels:
+    """Generated text (states, attributes) in one language."""
 
-CLOSED = "Stängt"
+    closed: str
+    closed_today: str
+    staffed: str
+    self_service: str
+    weekdays: tuple[str, ...]
+    months: tuple[str, ...]
+
+
+LABELS_SV = Labels(
+    closed="Stängt",
+    closed_today="Stängt idag",
+    staffed="Bemannat",
+    self_service="Meröppet",
+    weekdays=("Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"),
+    months=(
+        "januari",
+        "februari",
+        "mars",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "augusti",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
+)
+
+LABELS_EN = Labels(
+    closed="Closed",
+    closed_today="Closed today",
+    staffed="Staffed",
+    self_service="Self-service",
+    weekdays=(
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ),
+    months=(
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ),
+)
+
+
+def labels_for(language: str) -> Labels:
+    """Swedish for a Swedish Home Assistant, English for everything else."""
+    return LABELS_SV if language.lower().split("-")[0] == "sv" else LABELS_EN
 
 
 def branch_names(payload: ApiPayload) -> list[str]:
@@ -153,9 +199,9 @@ def _intervals_for(
     return items
 
 
-def _summary(intervals: Sequence[ApiInterval]) -> str:
+def _summary(intervals: Sequence[ApiInterval], labels: Labels) -> str:
     parts = [f"{i['from']}–{i['to']}" for i in intervals]
-    return ", ".join(parts) if parts else CLOSED
+    return ", ".join(parts) if parts else labels.closed
 
 
 def _merge(intervals: Sequence[ApiInterval]) -> list[ApiInterval]:
@@ -173,27 +219,28 @@ def _is_on(intervals: Sequence[ApiInterval], now_hm: str) -> bool:
     return any(i["from"] <= now_hm < i["to"] for i in intervals)
 
 
-def _day_summary(intervals: Sequence[ApiInterval]) -> str:
+def _day_summary(intervals: Sequence[ApiInterval], labels: Labels) -> str:
     """All of today's shifts in time order, self-service ones labelled."""
     parts = [
-        f"{'' if i.get('serviceType') == 'Staffed' else 'Meröppet '}"
+        f"{'' if i.get('serviceType') == 'Staffed' else labels.self_service + ' '}"
         f"{i['from']}–{i['to']}"
         for i in sorted(intervals, key=lambda i: (i["from"], i["to"]))
     ]
-    return ", ".join(parts) if parts else CLOSED
+    return ", ".join(parts) if parts else labels.closed
 
 
 def compute_branch_today(
     payload: ApiPayload,
     branch: str,
     now: datetime,
+    labels: Labels = LABELS_EN,
 ) -> BranchToday:
     """Compute today's hours and open/closed states for one branch.
 
     Each open/closed block is derived from exactly the intervals its `hours`
     string lists, so the two can never disagree. `open` answers "can I get
     in", which is true during staffed and Meröppet hours alike; `staffed` is
-    the narrower "is someone working there".
+    the narrower "is someone working there". Generated text uses `labels`.
     """
     date_str = now.strftime("%Y-%m-%d")
     now_hm = now.strftime("%H:%M")
@@ -203,8 +250,8 @@ def compute_branch_today(
     self_service = [i for i in intervals if i.get("serviceType") == "SelfService"]
     accessible = _merge(staffed + self_service)
 
-    staffed_summary = _summary(staffed)
-    self_service_summary = _summary(self_service)
+    staffed_summary = _summary(staffed, labels)
+    self_service_summary = _summary(self_service, labels)
 
     staffed_now = _is_on(staffed, now_hm)
     accessible_now = _is_on(accessible, now_hm)
@@ -212,11 +259,16 @@ def compute_branch_today(
         "staffed" if staffed_now else ("self_service" if accessible_now else "closed")
     )
 
-    date_label = f"{WEEKDAYS_SV[now.weekday()]} {now.day} {MONTHS_SV[now.month - 1]}"
+    weekday = labels.weekdays[now.weekday()]
+    date_label = f"{weekday} {now.day} {labels.months[now.month - 1]}"
 
     shifts: list[Shift] = [
         {
-            "type": "Bemannat" if i.get("serviceType") == "Staffed" else "Meröppet",
+            "type": (
+                labels.staffed
+                if i.get("serviceType") == "Staffed"
+                else labels.self_service
+            ),
             "service_type": i.get("serviceType"),
             "info": i.get("info"),
             "from": i.get("from"),
@@ -226,22 +278,22 @@ def compute_branch_today(
     ]
 
     lines = [f"**{branch.strip()}** — {date_label}"]
-    if staffed_summary != CLOSED:
-        lines.append(f"Bemannat: {staffed_summary}")
-    if self_service_summary != CLOSED:
-        lines.append(f"Meröppet: {self_service_summary}")
-    if staffed_summary == CLOSED and self_service_summary == CLOSED:
-        lines.append("Stängt idag")
+    if staffed:
+        lines.append(f"{labels.staffed}: {staffed_summary}")
+    if self_service:
+        lines.append(f"{labels.self_service}: {self_service_summary}")
+    if not staffed and not self_service:
+        lines.append(labels.closed_today)
     hours_markdown = "  \n".join(lines)
 
     return {
-        "hours": _day_summary(staffed + self_service),
+        "hours": _day_summary(staffed + self_service, labels),
         "staffed": {"is_on": staffed_now, "hours": staffed_summary},
-        "open": {"is_on": accessible_now, "hours": _summary(accessible)},
+        "open": {"is_on": accessible_now, "hours": _summary(accessible, labels)},
         "attributes": {
             "branch": branch.strip(),
             "date": date_str,
-            "weekday": WEEKDAYS_SV[now.weekday()],
+            "weekday": weekday,
             "date_label": date_label,
             "status": status,
             "staffed_summary": staffed_summary,

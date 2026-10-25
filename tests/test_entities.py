@@ -105,6 +105,25 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     assert hass.states.get(staffed.entity_id) is None
 
 
+async def test_swedish_home_assistant_gets_swedish_names_and_text(
+    hass: HomeAssistant,
+) -> None:
+    hass.config.language = "sv"
+    entry = await _setup(hass, _entry([BORENSBERG]), now="2026-10-20 22:00:00")
+
+    hours_id = _entity_id(hass, entry, BORENSBERG, "hours")
+    assert hours_id == "sensor.borensbergs_bibliotek_oppettider"
+    assert _entity_id(hass, entry, BORENSBERG, "open") == (
+        "binary_sensor.borensbergs_bibliotek_oppet"
+    )
+    assert _entity_id(hass, entry, BORENSBERG, "staffed") == (
+        "binary_sensor.borensbergs_bibliotek_bemannat"
+    )
+    hours = _state(hass, entry, BORENSBERG, "hours")
+    assert hours.state == "09:00–14:00, Meröppet 14:00–21:00"
+    assert hours.attributes["weekday"] == "Tisdag"
+
+
 @pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_enabled_staffed_sensor_is_yes_no_not_a_door(
     hass: HomeAssistant,
@@ -130,7 +149,7 @@ async def test_open_states_through_the_day(
     entry = await _setup(hass, _entry([BORENSBERG]), now=now)
 
     assert _state(hass, entry, BORENSBERG, "hours").state == (
-        "09:00–14:00, Meröppet 14:00–21:00"
+        "09:00–14:00, Self-service 14:00–21:00"
     )
     staffed_state = _state(hass, entry, BORENSBERG, "staffed")
     assert staffed_state.state == staffed

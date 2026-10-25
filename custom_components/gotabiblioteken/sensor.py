@@ -29,7 +29,7 @@ async def async_setup_entry(
 
 
 class LibraryHoursSensor(GotaBranchEntity, SensorEntity):
-    """Today's shifts, e.g. `09:00–14:00, Meröppet 14:00–21:00`."""
+    """Today's shifts, e.g. `09:00–14:00, Self-service 14:00–21:00`."""
 
     def __init__(
         self, coordinator: GotaCoordinator, entry: ConfigEntry, branch: str

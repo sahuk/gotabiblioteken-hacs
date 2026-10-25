@@ -32,6 +32,11 @@ uv run ruff check --fix . && uv run ruff format . && uv run mypy \
   runs the real `hacs/action` and `hassfest` (`.github/workflows/validate.yml`).
 - When editing `strings.json`, copy it to `translations/en.json` and mirror
   the keys in `translations/sv.json`.
+- Language: entity names come from translation keys (`translation_key` +
+  `entity.*` in the translation files), never hard-coded. Text the
+  integration generates (states, attributes) goes through `data.Labels` /
+  `labels_for(hass.config.language)`: Swedish only for a Swedish Home
+  Assistant, English otherwise. When in doubt, use English.
 
 ## Skills in the loop
 

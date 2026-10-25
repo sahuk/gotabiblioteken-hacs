@@ -29,7 +29,7 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Create the Öppet and Bemannat sensors for each favorite library."""
+    """Create the Open and Staffed sensors for each favorite library."""
     coordinator: GotaCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         LibraryOpenSensor(coordinator, entry, branch, key)

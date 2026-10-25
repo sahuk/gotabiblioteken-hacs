@@ -13,7 +13,7 @@ from homeassistant.util import dt as dt_util, slugify
 
 from .const import CONF_BRANCHES, DOMAIN, LOCAL_REFRESH_INTERVAL
 from .coordinator import GotaCoordinator
-from .data import BranchToday, compute_branch_today
+from .data import BranchToday, compute_branch_today, labels_for
 
 
 def favorite_branches(entry: ConfigEntry) -> list[str]:
@@ -53,7 +53,10 @@ class GotaBranchEntity(CoordinatorEntity[GotaCoordinator]):
 
     def _compute(self) -> BranchToday:
         return compute_branch_today(
-            self.coordinator.data or {}, self._branch, dt_util.now()
+            self.coordinator.data or {},
+            self._branch,
+            dt_util.now(),
+            labels_for(self.hass.config.language),
         )
 
     @property

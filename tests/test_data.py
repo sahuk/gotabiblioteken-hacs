@@ -5,10 +5,13 @@ from datetime import datetime, timedelta
 import pytest
 
 from custom_components.gotabiblioteken.data import (
+    LABELS_EN,
+    LABELS_SV,
     ApiPayload,
     _merge,
     branch_names,
     compute_branch_today,
+    labels_for,
 )
 
 from .const import SAMPLE_PAYLOAD
@@ -72,7 +75,9 @@ def test_merge(intervals, expected):
 
 
 def test_split_shift_staffed_then_self_service():
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("15:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("15:00"), LABELS_SV
+    )
     assert r["hours"] == "09:00–14:00, Meröppet 14:00–21:00"
     assert r["staffed"] == {"is_on": False, "hours": "09:00–14:00"}
     assert r["open"] == {"is_on": True, "hours": "09:00–21:00"}
@@ -84,14 +89,18 @@ def test_split_shift_staffed_then_self_service():
 
 
 def test_staffed_hours_count_as_cardholder_access():
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"), LABELS_SV
+    )
     assert r["staffed"]["is_on"] is True
     assert r["open"]["is_on"] is True
     assert r["attributes"]["status"] == "staffed"
 
 
 def test_self_service_only_branch():
-    r = compute_branch_today(SELF_SERVICE_ONLY, "Ekängens bibliotek", _at("20:00"))
+    r = compute_branch_today(
+        SELF_SERVICE_ONLY, "Ekängens bibliotek", _at("20:00"), LABELS_SV
+    )
     assert r["hours"] == "Meröppet 07:00–22:00"
     assert r["staffed"] == {"is_on": False, "hours": "Stängt"}
     assert r["open"] == {"is_on": True, "hours": "07:00–22:00"}
@@ -118,19 +127,23 @@ def test_shift_ending_at_midnight():
             }
         ]
     }
-    r = compute_branch_today(payload, "Sent bibliotek", _at("23:30"))
+    r = compute_branch_today(payload, "Sent bibliotek", _at("23:30"), LABELS_SV)
     assert r["open"] == {"is_on": True, "hours": "10:00–24:00"}
 
 
 def test_hours_listed_in_time_order():
     # Finspång opens for Meröppet before staff arrive.
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Finspångs huvudbibliotek", _at("08:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, "Finspångs huvudbibliotek", _at("08:00"), LABELS_SV
+    )
     assert r["hours"] == "Meröppet 09:00–12:00, 12:00–18:00"
 
 
 def test_duplicate_branch_merges_and_dedupes_shifts():
     # Leading-space + duplicate entry: one staffed (deduped) + one self-service.
-    r = compute_branch_today(SAMPLE_PAYLOAD, " Finspångs huvudbibliotek ", _at("13:00"))
+    r = compute_branch_today(
+        SAMPLE_PAYLOAD, " Finspångs huvudbibliotek ", _at("13:00"), LABELS_SV
+    )
     shifts = r["attributes"]["shifts"]
     assert len(shifts) == 2
     assert r["attributes"]["staffed_summary"] == "12:00–18:00"
@@ -138,7 +151,7 @@ def test_duplicate_branch_merges_and_dedupes_shifts():
 
 
 def test_missing_branch_is_closed_everywhere():
-    r = compute_branch_today(SAMPLE_PAYLOAD, "Does Not Exist", _at("12:00"))
+    r = compute_branch_today(SAMPLE_PAYLOAD, "Does Not Exist", _at("12:00"), LABELS_SV)
     assert r["hours"] == "Stängt"
     assert r["staffed"] == {"is_on": False, "hours": "Stängt"}
     assert r["open"] == {"is_on": False, "hours": "Stängt"}
@@ -147,9 +160,9 @@ def test_missing_branch_is_closed_everywhere():
 
 
 def test_markdown_and_labels():
-    a = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"))[
-        "attributes"
-    ]
+    a = compute_branch_today(
+        SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"), LABELS_SV
+    )["attributes"]
     assert a["date"] == "2026-10-20"
     assert a["weekday"] == "Tisdag"
     assert a["date_label"] == "Tisdag 20 oktober"
@@ -161,9 +174,34 @@ def test_markdown_and_labels():
     assert "Meröppet: 14:00–21:00" in a["hours_markdown"]
 
 
+@pytest.mark.parametrize(
+    ("language", "expected"),
+    [("sv", LABELS_SV), ("sv-SE", LABELS_SV), ("en", LABELS_EN), ("de", LABELS_EN)],
+)
+def test_labels_follow_language_with_english_fallback(language, expected):
+    assert labels_for(language) is expected
+
+
+def test_english_text_by_default():
+    r = compute_branch_today(SAMPLE_PAYLOAD, "Borensbergs bibliotek", _at("10:00"))
+    assert r["hours"] == "09:00–14:00, Self-service 14:00–21:00"
+    a = r["attributes"]
+    assert a["weekday"] == "Tuesday"
+    assert a["date_label"] == "Tuesday 20 October"
+    assert [s["type"] for s in a["shifts"]] == ["Staffed", "Self-service"]
+    assert a["hours_markdown"].splitlines()[1:] == [
+        "Staffed: 09:00–14:00  ",
+        "Self-service: 14:00–21:00",
+    ]
+    closed = compute_branch_today(SAMPLE_PAYLOAD, "Does Not Exist", _at("10:00"))
+    assert closed["hours"] == "Closed"
+    assert closed["open"]["hours"] == "Closed"
+    assert closed["attributes"]["hours_markdown"].endswith("Closed today")
+
+
 def _within(hours: str, hm: str) -> bool:
     """Is `hm` inside the hours as displayed, e.g. "09:00–14:00, 15:00–18:00"?"""
-    if hours == "Stängt":
+    if hours in (LABELS_EN.closed, LABELS_SV.closed):
         return False
     return any(
         start <= hm < end

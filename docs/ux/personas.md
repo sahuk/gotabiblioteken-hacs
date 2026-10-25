@@ -17,7 +17,7 @@ often joins them.
 
 - The parents use the library like most people: they drop in with the card
   on evenings and weekends to collect reservations, staffed or Meröppet. They
-  only need **Öppet**.
+  only need **Open** (Öppet).
 - The kids and the grandparent need **in-person support**: the kids come for
   homework help and story hour, and the grandparent needs help with the
   self-checkout. For them the library is only useful when it is **staffed**.
@@ -40,13 +40,16 @@ So staffed-only is the exception, needed by people who rely on in-person help
 
 1. Setup only asks which libraries to follow; there is no staffed vs.
    self-service choice.
-2. Each library is its own device with today's hours and an **Öppet**
+2. Each library is its own device with today's hours and an **Open** (Öppet)
    open/closed sensor (open during staffed *or* Meröppet hours).
-3. Each library also gets a **Bemannat** (staffed, Ja/Nej) sensor, created
+3. Each library also gets a **Staffed** (Bemannat, Yes/No) sensor, created
    **disabled**. Those who need in-person support enable it per library.
    It never shows "closed" while the library is open for Meröppet.
 4. **Consistency:** each open/closed entity is on exactly when the current
    time falls inside the hours it shows in its own `hours` attribute. The
    state and the listed hours never disagree.
-5. A closed day reads as `Stängt` everywhere.
+5. A closed day reads as closed everywhere (`Closed`, or `Stängt` in Swedish).
 6. Removing a library from the favorites (Configure) removes its device.
+7. Names and generated text follow Home Assistant's language: Swedish for a
+   Swedish setup, English for every other language. Nothing user-facing is
+   hard-coded Swedish.

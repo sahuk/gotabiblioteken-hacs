@@ -10,17 +10,22 @@ release is tagged `v<version>`.
 
 ### Changed (breaking)
 
-- Each favorite library is now its own device with today's hours
-  (`sensor.<library>_oppettider`) and **Öppet** (`binary_sensor.<library>_oppet`,
-  an open/closed door that is open during staffed or Meröppet hours). A
-  **Bemannat** sensor (`binary_sensor.<library>_bemannat`, Ja/Nej) is created
-  disabled, for people who need in-person support to enable per library.
+- Each favorite library is now its own device with **Opening hours**
+  (`sensor.<library>_opening_hours`) and **Open**
+  (`binary_sensor.<library>_open`, an open/closed door that is open during
+  staffed or Meröppet hours). A **Staffed** sensor
+  (`binary_sensor.<library>_staffed`, Yes/No) is created disabled, for people
+  who need in-person support to enable per library. On a Swedish Home
+  Assistant the names and IDs are Swedish (Öppettider, Öppet, Bemannat).
   Entity IDs change: the old entities are removed on upgrade (their history
   and customizations don't carry over), so update dashboards and automations.
 - Setup no longer asks whether Meröppet counts as open: it always does. The
   `open_now` and `include_self_service` attributes are gone.
 - The hours sensor lists all of today's shifts in time order, marking
-  Meröppet ones (`09:00–14:00, Meröppet 14:00–21:00`).
+  self-service ones (`09:00–14:00, Self-service 14:00–21:00`).
+- States and attributes (closed, weekday, date label, shift labels, Markdown
+  block) follow Home Assistant's language: Swedish for Swedish, English
+  otherwise. They were always Swedish before.
 
 ### Fixed
 
