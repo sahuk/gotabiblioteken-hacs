@@ -36,6 +36,11 @@ release is tagged `v<version>`.
 
 ### Added
 
+- Finnish, Norwegian (Bokmål and Nynorsk), Danish and Icelandic: entity
+  names, setup dialog, and generated text (closed, weekdays, months, date
+  format, self-service label). Drafts flagged for native review in
+  `TRANSLATIONS.md`, which also tracks Sweden's other minority languages
+  (waiting on Home Assistant support).
 - Library devices use a short place name ("Motala", "Borensberg",
   "Agora") so entity names start with what tells libraries apart and stay
   readable when a dashboard card cuts them off ("Motala Open"). The full name

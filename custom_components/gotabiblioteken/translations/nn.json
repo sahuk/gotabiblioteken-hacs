@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Vel favorittbiblioteka dine. Kvart bibliotek blir ei eining som viser opningstidene i dag og om biblioteket er ope akkurat no.",
+        "data": {
+          "branches": "Favorittbibliotek"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken er allereie sett opp.",
+      "cannot_connect": "Kunne ikkje nå API-et for opningstider."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Oppdater favorittbiblioteka dine.",
+        "data": {
+          "branches": "Favorittbibliotek"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Ope"
+      },
+      "staffed": {
+        "name": "Betent",
+        "state": {
+          "on": "Ja",
+          "off": "Nei"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Opningstider"
+      }
+    }
+  }
+}

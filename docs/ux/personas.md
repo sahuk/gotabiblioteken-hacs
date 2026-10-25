@@ -50,9 +50,12 @@ So staffed-only is the exception, needed by people who rely on in-person help
    state and the listed hours never disagree.
 5. A closed day reads as closed everywhere (`Closed`, or `Stängt` in Swedish).
 6. Removing a library from the favorites (Configure) removes its device.
-7. Names and generated text follow Home Assistant's language: Swedish for a
-   Swedish setup, English for every other language. Nothing user-facing is
-   hard-coded Swedish.
+7. Names and generated text follow Home Assistant's language: Swedish,
+   English, Finnish (also a national minority language of Sweden), and the
+   main Nordic neighbors' languages (Norwegian Bokmål/Nynorsk, Danish,
+   Icelandic), with English for anything else. Nothing user-facing is
+   hard-coded Swedish. Sweden's other minority languages follow once Home
+   Assistant can be set to them (TRANSLATIONS.md).
 8. Names lead with what tells libraries apart: the place ("Motala Open",
    "Agora Opening hours"), not a shared word like "bibliotek", so a name cut
    off on a dashboard card still identifies the library.

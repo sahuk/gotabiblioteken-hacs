@@ -1,7 +1,7 @@
 """Pure opening-hours computation.
 
 No Home Assistant imports on purpose: this module is unit-testable on its own.
-Generated text is Swedish or English (`labels_for`); entity names are not set
+Generated text follows Home Assistant's language (`labels_for`); entity names are not set
 here but come from the translation files.
 Merges duplicate branch entries, de-duplicates identical shifts, and splits
 staffed from self-service hours.
@@ -95,37 +95,19 @@ class Labels:
     closed_today: str
     staffed: str
     self_service: str
+    # Placeholders: {weekday}, {day}, {month}.
+    date_format: str
     weekdays: tuple[str, ...]
+    # In the form the date label uses (Finnish: partitive, "lokakuuta").
     months: tuple[str, ...]
 
-
-LABELS_SV = Labels(
-    closed="Stängt",
-    closed_today="Stängt idag",
-    staffed="Bemannat",
-    self_service="Meröppet",
-    weekdays=("Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"),
-    months=(
-        "januari",
-        "februari",
-        "mars",
-        "april",
-        "maj",
-        "juni",
-        "juli",
-        "augusti",
-        "september",
-        "oktober",
-        "november",
-        "december",
-    ),
-)
 
 LABELS_EN = Labels(
     closed="Closed",
     closed_today="Closed today",
     staffed="Staffed",
     self_service="Self-service",
+    date_format="{weekday} {day} {month}",
     weekdays=(
         "Monday",
         "Tuesday",
@@ -151,10 +133,210 @@ LABELS_EN = Labels(
     ),
 )
 
+LABELS_SV = Labels(
+    closed="Stängt",
+    closed_today="Stängt idag",
+    staffed="Bemannat",
+    self_service="Meröppet",
+    date_format="{weekday} {day} {month}",
+    weekdays=(
+        "Måndag",
+        "Tisdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lördag",
+        "Söndag",
+    ),
+    months=(
+        "januari",
+        "februari",
+        "mars",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "augusti",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
+)
+
+# Finnish is also a national minority language of Sweden.
+LABELS_FI = Labels(
+    closed="Suljettu",
+    closed_today="Suljettu tänään",
+    staffed="Palveluaika",
+    self_service="Omatoimiaika",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Maanantai",
+        "Tiistai",
+        "Keskiviikko",
+        "Torstai",
+        "Perjantai",
+        "Lauantai",
+        "Sunnuntai",
+    ),
+    months=(
+        "tammikuuta",
+        "helmikuuta",
+        "maaliskuuta",
+        "huhtikuuta",
+        "toukokuuta",
+        "kesäkuuta",
+        "heinäkuuta",
+        "elokuuta",
+        "syyskuuta",
+        "lokakuuta",
+        "marraskuuta",
+        "joulukuuta",
+    ),
+)
+
+LABELS_NB = Labels(
+    closed="Stengt",
+    closed_today="Stengt i dag",
+    staffed="Betjent",
+    self_service="Meråpent",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "mars",
+        "april",
+        "mai",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "desember",
+    ),
+)
+
+LABELS_NN = Labels(
+    closed="Stengt",
+    closed_today="Stengt i dag",
+    staffed="Betent",
+    self_service="Meirope",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Måndag",
+        "Tysdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Laurdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "mars",
+        "april",
+        "mai",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "desember",
+    ),
+)
+
+LABELS_DA = Labels(
+    closed="Lukket",
+    closed_today="Lukket i dag",
+    staffed="Betjent",
+    self_service="Åbent bibliotek",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "marts",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
+)
+
+LABELS_IS = Labels(
+    closed="Lokað",
+    closed_today="Lokað í dag",
+    staffed="Mannað",
+    self_service="Sjálfsafgreiðsla",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mánudagur",
+        "Þriðjudagur",
+        "Miðvikudagur",
+        "Fimmtudagur",
+        "Föstudagur",
+        "Laugardagur",
+        "Sunnudagur",
+    ),
+    months=(
+        "janúar",
+        "febrúar",
+        "mars",
+        "apríl",
+        "maí",
+        "júní",
+        "júlí",
+        "ágúst",
+        "september",
+        "október",
+        "nóvember",
+        "desember",
+    ),
+)
+
+# Keyed by Home Assistant language code. Sweden's other national minority
+# languages (Meänkieli, Sami, Romani, Yiddish) can't be selected as Home
+# Assistant's language yet; see TRANSLATIONS.md.
+LABELS: dict[str, Labels] = {
+    "en": LABELS_EN,
+    "sv": LABELS_SV,
+    "fi": LABELS_FI,
+    "nb": LABELS_NB,
+    "nn": LABELS_NN,
+    "da": LABELS_DA,
+    "is": LABELS_IS,
+}
+
 
 def labels_for(language: str) -> Labels:
-    """Swedish for a Swedish Home Assistant, English for everything else."""
-    return LABELS_SV if language.lower().split("-")[0] == "sv" else LABELS_EN
+    """Labels for Home Assistant's language; English when it isn't covered."""
+    return LABELS.get(language.lower().split("-")[0], LABELS_EN)
 
 
 def branch_names(payload: ApiPayload) -> list[str]:
@@ -263,7 +445,9 @@ def compute_branch_today(
     )
 
     weekday = labels.weekdays[now.weekday()]
-    date_label = f"{weekday} {now.day} {labels.months[now.month - 1]}"
+    date_label = labels.date_format.format(
+        weekday=weekday, day=now.day, month=labels.months[now.month - 1]
+    )
 
     shifts: list[Shift] = [
         {

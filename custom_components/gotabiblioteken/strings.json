@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Select the libraries you want as favorites. Each one becomes a device showing today's hours and whether it is staffed or open for self-service right now.",
+        "description": "Select your favorite libraries. Each one becomes a device showing today's opening hours and whether the library is open right now.",
         "data": {
           "branches": "Favorite libraries"
         }

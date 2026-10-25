@@ -35,8 +35,10 @@ uv run ruff check --fix . && uv run ruff format . && uv run mypy \
 - Language: entity names come from translation keys (`translation_key` +
   `entity.*` in the translation files), never hard-coded. Text the
   integration generates (states, attributes) goes through `data.Labels` /
-  `labels_for(hass.config.language)`: Swedish only for a Swedish Home
-  Assistant, English otherwise. When in doubt, use English.
+  `labels_for(hass.config.language)`, with English for uncovered languages.
+  When in doubt, use English. Every user-facing string must exist in all
+  languages listed in TRANSLATIONS.md (follow its "Adding a language" steps;
+  `tests/test_localization.py` and the convention tests enforce it).
 - Library display names come from `libraries.py` (short place name, e.g.
   "Motala", used as the device name so entity names start with it). If the
   API adds a branch, add its short name and website there; a test keeps the
