@@ -6,7 +6,9 @@ self-service-only entry, a duplicate-listed branch with a leading space
 (Mjölby) so the branch-name union is exercised.
 """
 
-SAMPLE_PAYLOAD = {
+from custom_components.gotabiblioteken.data import ApiPayload
+
+SAMPLE_PAYLOAD: ApiPayload = {
     "dates": [
         {
             "date": "2026-10-20",

@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "staffed": {
+        "default": "mdi:account-off-outline",
+        "state": {
+          "on": "mdi:account-tie"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "default": "mdi:clock-outline"
+      }
+    }
+  }
+}

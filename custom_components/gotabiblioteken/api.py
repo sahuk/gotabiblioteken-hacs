@@ -3,19 +3,18 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
 
 from aiohttp import ClientSession
 
 from .const import API_URL, CUSTOMER_ID
-from .data import branch_names
+from .data import ApiPayload, branch_names
 
 
 async def async_fetch_dates(
     session: ClientSession,
     days: int = 2,
     customer_id: str = CUSTOMER_ID,
-) -> dict[str, Any]:
+) -> ApiPayload:
     """Fetch the raw opening-hours payload (today plus `days - 1` more)."""
     url = API_URL.format(customer_id=customer_id)
     params: dict[str, str | int] = {
@@ -26,7 +25,7 @@ async def async_fetch_dates(
     async with asyncio.timeout(20):
         async with session.get(url, params=params) as resp:
             resp.raise_for_status()
-            payload: dict[str, Any] = await resp.json()
+            payload: ApiPayload = await resp.json()
             return payload
 
 

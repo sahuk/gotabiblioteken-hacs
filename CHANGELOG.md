@@ -8,8 +8,41 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Changed (breaking)
+
+- Each favorite library is now its own device with **Opening hours**
+  (`sensor.<library>_opening_hours`) and **Open**
+  (`binary_sensor.<library>_open`, an open/closed door that is open during
+  staffed or Meröppet hours). A **Staffed** sensor
+  (`binary_sensor.<library>_staffed`, Yes/No) is created disabled, for people
+  who need in-person support to enable per library. On a Swedish Home
+  Assistant the names and IDs are Swedish (Öppettider, Öppet, Bemannat).
+  Entity IDs change: the old entities are removed on upgrade (their history
+  and customizations don't carry over), so update dashboards and automations.
+- Setup no longer asks whether Meröppet counts as open: it always does. The
+  `open_now` and `include_self_service` attributes are gone.
+- The hours sensor lists all of today's shifts in time order, marking
+  self-service ones (`09:00–14:00, Self-service 14:00–21:00`).
+- States and attributes (closed, weekday, date label, shift labels, Markdown
+  block) follow Home Assistant's language: Swedish for Swedish, English
+  otherwise. They were always Swedish before.
+
+### Fixed
+
+- The door icon could say open while the listed hours said otherwise (e.g.
+  during Meröppet with staffed hours shown). Every open/closed state now
+  comes from exactly the hours it displays.
+- Removing a favorite now removes its device.
+
 ### Added
 
+- Each library links to its page on gotabiblioteken.se: the device's
+  **Visit** link and a `website` attribute on the hours sensor.
+- `scripts/type_coverage.py`: measures how much of the code mypy types
+  precisely (no `Any`), gated at 97% in CI. The API payload and computed
+  results are now `TypedDict`s.
+- UX persona and user story: open-by-default, with staffed hours as opt-in
+  for people who need in-person support (`docs/ux/personas.md`).
 - Static checks: ruff (lint + format) and strict mypy, locally and in CI.
 - HACS and hassfest validation in CI, plus local repo-convention tests.
 - Release workflow that verifies the tag against the manifest and attaches
