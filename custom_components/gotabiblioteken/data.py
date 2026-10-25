@@ -98,7 +98,8 @@ class Labels:
     # Placeholders: {weekday}, {day}, {month}.
     date_format: str
     weekdays: tuple[str, ...]
-    # In the form the date label uses (Finnish: partitive, "lokakuuta").
+    # In the form the date label uses (genitive/partitive where the
+    # language needs it: Finnish "lokakuuta", Polish "października").
     months: tuple[str, ...]
 
 
@@ -320,6 +321,285 @@ LABELS_IS = Labels(
     ),
 )
 
+LABELS_DE = Labels(
+    closed="Geschlossen",
+    closed_today="Heute geschlossen",
+    staffed="Mit Personal",
+    self_service="Selbstbedienung",
+    date_format="{weekday}, {day}. {month}",
+    weekdays=(
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag",
+        "Sonntag",
+    ),
+    months=(
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember",
+    ),
+)
+
+LABELS_FR = Labels(
+    closed="Fermé",
+    closed_today="Fermé aujourd'hui",
+    staffed="Avec personnel",
+    self_service="Libre-service",
+    date_format="{weekday} {day} {month}",
+    weekdays=(
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi",
+        "Dimanche",
+    ),
+    months=(
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+    ),
+)
+
+LABELS_ES = Labels(
+    closed="Cerrado",
+    closed_today="Cerrado hoy",
+    staffed="Con personal",
+    self_service="Autoservicio",
+    date_format="{weekday}, {day} de {month}",
+    weekdays=(
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+    ),
+    months=(
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+    ),
+)
+
+LABELS_PT = Labels(
+    closed="Fechado",
+    closed_today="Fechado hoje",
+    staffed="Com pessoal",
+    self_service="Autosserviço",
+    date_format="{weekday}, {day} de {month}",
+    weekdays=(
+        "Segunda-feira",
+        "Terça-feira",
+        "Quarta-feira",
+        "Quinta-feira",
+        "Sexta-feira",
+        "Sábado",
+        "Domingo",
+    ),
+    months=(
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+    ),
+)
+
+LABELS_IT = Labels(
+    closed="Chiuso",
+    closed_today="Chiuso oggi",
+    staffed="Con personale",
+    self_service="Self-service",
+    date_format="{weekday} {day} {month}",
+    weekdays=(
+        "Lunedì",
+        "Martedì",
+        "Mercoledì",
+        "Giovedì",
+        "Venerdì",
+        "Sabato",
+        "Domenica",
+    ),
+    months=(
+        "gennaio",
+        "febbraio",
+        "marzo",
+        "aprile",
+        "maggio",
+        "giugno",
+        "luglio",
+        "agosto",
+        "settembre",
+        "ottobre",
+        "novembre",
+        "dicembre",
+    ),
+)
+
+LABELS_ET = Labels(
+    closed="Suletud",
+    closed_today="Täna suletud",
+    staffed="Teenindusega",
+    self_service="Iseteenindus",
+    date_format="{weekday}, {day}. {month}",
+    weekdays=(
+        "Esmaspäev",
+        "Teisipäev",
+        "Kolmapäev",
+        "Neljapäev",
+        "Reede",
+        "Laupäev",
+        "Pühapäev",
+    ),
+    months=(
+        "jaanuar",
+        "veebruar",
+        "märts",
+        "aprill",
+        "mai",
+        "juuni",
+        "juuli",
+        "august",
+        "september",
+        "oktoober",
+        "november",
+        "detsember",
+    ),
+)
+
+LABELS_LV = Labels(
+    closed="Slēgts",
+    closed_today="Šodien slēgts",
+    staffed="Ar personālu",
+    self_service="Pašapkalpošanās",
+    date_format="{weekday}, {day}. {month}",
+    weekdays=(
+        "Pirmdiena",
+        "Otrdiena",
+        "Trešdiena",
+        "Ceturtdiena",
+        "Piektdiena",
+        "Sestdiena",
+        "Svētdiena",
+    ),
+    months=(
+        "janvāris",
+        "februāris",
+        "marts",
+        "aprīlis",
+        "maijs",
+        "jūnijs",
+        "jūlijs",
+        "augusts",
+        "septembris",
+        "oktobris",
+        "novembris",
+        "decembris",
+    ),
+)
+
+LABELS_LT = Labels(
+    closed="Uždaryta",
+    closed_today="Šiandien uždaryta",
+    staffed="Su personalu",
+    self_service="Savitarna",
+    date_format="{weekday}, {month} {day} d.",
+    weekdays=(
+        "Pirmadienis",
+        "Antradienis",
+        "Trečiadienis",
+        "Ketvirtadienis",
+        "Penktadienis",
+        "Šeštadienis",
+        "Sekmadienis",
+    ),
+    months=(
+        "sausio",
+        "vasario",
+        "kovo",
+        "balandžio",
+        "gegužės",
+        "birželio",
+        "liepos",
+        "rugpjūčio",
+        "rugsėjo",
+        "spalio",
+        "lapkričio",
+        "gruodžio",
+    ),
+)
+
+LABELS_PL = Labels(
+    closed="Zamknięte",
+    closed_today="Dziś zamknięte",
+    staffed="Z obsługą",
+    self_service="Samoobsługa",
+    date_format="{weekday}, {day} {month}",
+    weekdays=(
+        "Poniedziałek",
+        "Wtorek",
+        "Środa",
+        "Czwartek",
+        "Piątek",
+        "Sobota",
+        "Niedziela",
+    ),
+    months=(
+        "stycznia",
+        "lutego",
+        "marca",
+        "kwietnia",
+        "maja",
+        "czerwca",
+        "lipca",
+        "sierpnia",
+        "września",
+        "października",
+        "listopada",
+        "grudnia",
+    ),
+)
+
 # Keyed by Home Assistant language code. Sweden's other national minority
 # languages (Meänkieli, Sami, Romani, Yiddish) can't be selected as Home
 # Assistant's language yet; see TRANSLATIONS.md.
@@ -331,12 +611,26 @@ LABELS: dict[str, Labels] = {
     "nn": LABELS_NN,
     "da": LABELS_DA,
     "is": LABELS_IS,
+    "de": LABELS_DE,
+    "fr": LABELS_FR,
+    "es": LABELS_ES,
+    "pt": LABELS_PT,
+    "it": LABELS_IT,
+    "et": LABELS_ET,
+    "lv": LABELS_LV,
+    "lt": LABELS_LT,
+    "pl": LABELS_PL,
 }
 
 
 def labels_for(language: str) -> Labels:
-    """Labels for Home Assistant's language; English when it isn't covered."""
-    return LABELS.get(language.lower().split("-")[0], LABELS_EN)
+    """Labels for Home Assistant's language; English when it isn't covered.
+
+    Exact match only, like Home Assistant's own translation lookup: a
+    regional variant without its own file ("pt-BR", "es-419") gets English
+    entity names, so its generated text is English too, not a mix.
+    """
+    return LABELS.get(language, LABELS_EN)
 
 
 def branch_names(payload: ApiPayload) -> list[str]:

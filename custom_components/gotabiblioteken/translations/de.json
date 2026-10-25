@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Wähle deine Lieblingsbibliotheken aus. Jede wird zu einem Gerät, das die heutigen Öffnungszeiten anzeigt und ob die Bibliothek gerade geöffnet ist.",
+        "data": {
+          "branches": "Lieblingsbibliotheken"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken ist bereits eingerichtet.",
+      "cannot_connect": "Die Öffnungszeiten-API konnte nicht erreicht werden."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Aktualisiere deine Lieblingsbibliotheken.",
+        "data": {
+          "branches": "Lieblingsbibliotheken"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Geöffnet"
+      },
+      "staffed": {
+        "name": "Mit Personal",
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Öffnungszeiten"
+      }
+    }
+  }
+}

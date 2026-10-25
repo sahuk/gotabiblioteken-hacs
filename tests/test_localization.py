@@ -39,9 +39,10 @@ def _translation(language: str) -> dict[str, Any]:
 
 
 def test_expected_languages():
-    # Swedish + English, Finnish (also a Swedish minority language), and the
-    # main languages of the neighboring Nordic countries.
-    assert SUPPORTED == ["da", "en", "fi", "is", "nb", "nn", "sv"]
+    nordic = ["sv", "en", "fi", "nb", "nn", "da", "is"]  # fi: also a minority language
+    continental_eu = ["de", "fr", "es", "pt", "it"]
+    baltic_and_poland = ["et", "lv", "lt", "pl"]
+    assert sorted(nordic + continental_eu + baltic_and_poland) == SUPPORTED
 
 
 def test_translation_files_and_labels_cover_the_same_languages():
@@ -67,12 +68,13 @@ def test_labels_are_complete(language):
 @pytest.mark.parametrize(
     ("language", "expected"),
     [
-        ("fi-FI", "fi"),
-        ("nb", "nb"),
-        ("nn", "nn"),
-        ("da", "da"),
-        ("is", "is"),
-        ("de", "en"),  # not covered: English
+        ("fi", "fi"),
+        ("pt", "pt"),
+        # Regional variants without their own file get English entity names
+        # from Home Assistant, so the generated text is English as well.
+        ("pt-BR", "en"),
+        ("es-419", "en"),
+        ("ja", "en"),  # not covered
         ("fit", "en"),  # Meänkieli; not selectable in HA yet
     ],
 )
@@ -90,6 +92,15 @@ def test_labels_for(language, expected):
         ("nn", "Tysdag 20. oktober", "09:00–14:00, Meirope 14:00–21:00"),
         ("da", "Tirsdag 20. oktober", "09:00–14:00, Åbent bibliotek 14:00–21:00"),
         ("is", "Þriðjudagur 20. október", "09:00–14:00, Sjálfsafgreiðsla 14:00–21:00"),
+        ("de", "Dienstag, 20. Oktober", "09:00–14:00, Selbstbedienung 14:00–21:00"),
+        ("fr", "Mardi 20 octobre", "09:00–14:00, Libre-service 14:00–21:00"),
+        ("es", "Martes, 20 de octubre", "09:00–14:00, Autoservicio 14:00–21:00"),
+        ("pt", "Terça-feira, 20 de outubro", "09:00–14:00, Autosserviço 14:00–21:00"),
+        ("it", "Martedì 20 ottobre", "09:00–14:00, Self-service 14:00–21:00"),
+        ("et", "Teisipäev, 20. oktoober", "09:00–14:00, Iseteenindus 14:00–21:00"),
+        ("lv", "Otrdiena, 20. oktobris", "09:00–14:00, Pašapkalpošanās 14:00–21:00"),
+        ("lt", "Antradienis, spalio 20 d.", "09:00–14:00, Savitarna 14:00–21:00"),
+        ("pl", "Wtorek, 20 października", "09:00–14:00, Samoobsługa 14:00–21:00"),
     ],
 )
 def test_generated_text(language, date_label, hours):

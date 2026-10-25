@@ -36,9 +36,10 @@ release is tagged `v<version>`.
 
 ### Added
 
-- Finnish, Norwegian (Bokmål and Nynorsk), Danish and Icelandic: entity
-  names, setup dialog, and generated text (closed, weekdays, months, date
-  format, self-service label). Drafts flagged for native review in
+- 14 more languages: Finnish, Norwegian (Bokmål and Nynorsk), Danish,
+  Icelandic, German, French, Spanish, Portuguese, Italian, Estonian, Latvian,
+  Lithuanian and Polish. Each covers entity names, the setup dialog, and
+  generated text (closed, weekdays, months, date format, self-service label). Drafts flagged for native review in
   `TRANSLATIONS.md`, which also tracks Sweden's other minority languages
   (waiting on Home Assistant support).
 - Library devices use a short place name ("Motala", "Borensberg",

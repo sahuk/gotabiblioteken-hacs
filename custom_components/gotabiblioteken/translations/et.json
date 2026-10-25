@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Vali oma lemmikraamatukogud. Igaüks neist muutub seadmeks, mis näitab tänaseid lahtiolekuaegu ja seda, kas raamatukogu on praegu avatud.",
+        "data": {
+          "branches": "Lemmikraamatukogud"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken on juba seadistatud.",
+      "cannot_connect": "Lahtiolekuaegade API-ga ei õnnestunud ühendust saada."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Uuenda oma lemmikraamatukogusid.",
+        "data": {
+          "branches": "Lemmikraamatukogud"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Avatud"
+      },
+      "staffed": {
+        "name": "Teenindusega",
+        "state": {
+          "on": "Jah",
+          "off": "Ei"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Lahtiolekuajad"
+      }
+    }
+  }
+}

@@ -4,7 +4,9 @@ The integration follows Home Assistant's language: entity names and the
 setup dialog come from `custom_components/gotabiblioteken/translations/`, and
 the text it generates (closed, weekdays, months, date format, the self-service
 label) from `Labels` in `custom_components/gotabiblioteken/data.py`. Any
-language not listed here falls back to English.
+language not listed here falls back to English. Matching is exact, as in Home
+Assistant itself: a regional variant such as Brazilian Portuguese (`pt-BR`)
+or Latin American Spanish (`es-419`) gets English until it has its own file.
 
 | Language | Code | Why | Status |
 | --- | --- | --- | --- |
@@ -15,6 +17,15 @@ language not listed here falls back to English.
 | Norwegian Nynorsk | `nn` | Norway | **needs native review** |
 | Danish | `da` | Denmark | **needs native review** |
 | Icelandic | `is` | Iceland | **needs native review** |
+| German | `de` | major EU language | **needs native review** |
+| French | `fr` | major EU language | **needs native review** |
+| Spanish | `es` | major EU language | **needs native review** |
+| Portuguese (European) | `pt` | major EU language | **needs native review** |
+| Italian | `it` | major EU language | **needs native review** |
+| Estonian | `et` | Baltic EU neighbor | **needs native review** |
+| Latvian | `lv` | Baltic EU neighbor | **needs native review** |
+| Lithuanian | `lt` | Baltic EU neighbor | **needs native review** |
+| Polish | `pl` | Baltic Sea EU neighbor | **needs native review** |
 
 The non-Swedish translations are drafts. If you speak one of them, please
 check the setup dialog, the entity names (Open, Staffed, Opening hours) and

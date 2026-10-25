@@ -53,7 +53,9 @@ So staffed-only is the exception, needed by people who rely on in-person help
 7. Names and generated text follow Home Assistant's language: Swedish,
    English, Finnish (also a national minority language of Sweden), and the
    main Nordic neighbors' languages (Norwegian Bokmål/Nynorsk, Danish,
-   Icelandic), with English for anything else. Nothing user-facing is
+   Icelandic), the major continental EU languages (German, French, Spanish,
+   Portuguese, Italian), and Estonian, Latvian, Lithuanian and Polish, with
+   English for anything else. Nothing user-facing is
    hard-coded Swedish. Sweden's other minority languages follow once Home
    Assistant can be set to them (TRANSLATIONS.md).
 8. Names lead with what tells libraries apart: the place ("Motala Open",

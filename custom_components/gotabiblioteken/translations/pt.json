@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Selecione as suas bibliotecas favoritas. Cada uma torna-se um dispositivo que mostra o horário de hoje e se a biblioteca está aberta neste momento.",
+        "data": {
+          "branches": "Bibliotecas favoritas"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "O Götabiblioteken já está configurado.",
+      "cannot_connect": "Não foi possível contactar a API de horários."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Atualize as suas bibliotecas favoritas.",
+        "data": {
+          "branches": "Bibliotecas favoritas"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Aberto"
+      },
+      "staffed": {
+        "name": "Com pessoal",
+        "state": {
+          "on": "Sim",
+          "off": "Não"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Horário"
+      }
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Pasirinkite mėgstamas bibliotekas. Kiekviena tampa įrenginiu, rodančiu šiandienos darbo laiką ir ar biblioteka šiuo metu atidaryta.",
+        "data": {
+          "branches": "Mėgstamos bibliotekos"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken jau sukonfigūruota.",
+      "cannot_connect": "Nepavyko pasiekti darbo laiko API."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Atnaujinkite mėgstamas bibliotekas.",
+        "data": {
+          "branches": "Mėgstamos bibliotekos"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Atidaryta"
+      },
+      "staffed": {
+        "name": "Su personalu",
+        "state": {
+          "on": "Taip",
+          "off": "Ne"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Darbo laikas"
+      }
+    }
+  }
+}

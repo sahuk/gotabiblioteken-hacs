@@ -176,7 +176,7 @@ def test_markdown_and_labels():
 
 @pytest.mark.parametrize(
     ("language", "expected"),
-    [("sv", LABELS_SV), ("sv-SE", LABELS_SV), ("en", LABELS_EN), ("de", LABELS_EN)],
+    [("sv", LABELS_SV), ("en", LABELS_EN), ("ja", LABELS_EN)],
 )
 def test_labels_follow_language_with_english_fallback(language, expected):
     assert labels_for(language) is expected
