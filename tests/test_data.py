@@ -130,7 +130,9 @@ def test_self_service_only_branch():
         SELF_SERVICE_ONLY, "Ekängens bibliotek", _at("20:00"), LABELS_SV
     )
     assert r["hours"] == "Meröppet 07:00–22:00"
-    assert r["staffed"] == {"is_on": False, "hours": "Stängt"}
+    # Open for Meröppet, so the staffed view says "not staffed", not "closed".
+    assert r["staffed"] == {"is_on": False, "hours": "Obemannat"}
+    assert r["attributes"]["staffed_summary"] == "Obemannat"
     assert r["open"] == {"is_on": True, "hours": "07:00–22:00"}
 
 
@@ -229,7 +231,7 @@ def test_english_text_by_default():
 
 def _within(hours: str, hm: str) -> bool:
     """Is `hm` inside the hours as displayed, e.g. "09:00–14:00, 15:00–18:00"?"""
-    if hours in (LABELS_EN.closed, LABELS_SV.closed):
+    if hours in (LABELS_EN.closed, LABELS_EN.not_staffed):
         return False
     return any(
         start <= hm < end

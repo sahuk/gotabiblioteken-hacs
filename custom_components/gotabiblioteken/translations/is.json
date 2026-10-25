@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Opnunartími"
+      },
+      "staffed_hours": {
+        "name": "Mannaðir tímar"
       }
     }
   }

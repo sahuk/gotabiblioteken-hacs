@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Lahtiolekuajad"
+      },
+      "staffed_hours": {
+        "name": "Teenindusajad"
       }
     }
   }

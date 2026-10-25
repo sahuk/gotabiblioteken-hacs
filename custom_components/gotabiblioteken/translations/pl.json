@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Godziny otwarcia"
+      },
+      "staffed_hours": {
+        "name": "Godziny z obsługą"
       }
     }
   }

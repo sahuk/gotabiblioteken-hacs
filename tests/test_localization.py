@@ -63,6 +63,7 @@ def test_labels_are_complete(language):
     assert len(labels.months) == 12
     assert all([labels.closed, labels.closed_today, labels.staffed])
     assert labels.self_service
+    assert labels.not_staffed not in (labels.closed, labels.closed_today)
     labels.date_format.format(weekday="x", day=1, month="y")
 
 

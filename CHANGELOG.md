@@ -8,6 +8,17 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Added
+
+- **Staffed hours** sensor (`sensor.<place>_staffed_hours`), created disabled
+  like the Staffed sensor: today's staffed hours only (`09:00–14:00`).
+
+### Changed
+
+- On a Meröppet-only day the staffed hours (the new sensor, the Staffed
+  sensor's `hours` and `staffed_summary`) read **Not staffed** instead of
+  **Closed**, since the library is open for self-service.
+
 ### Security
 
 - API responses over 1 MiB are refused before parsing, and the response

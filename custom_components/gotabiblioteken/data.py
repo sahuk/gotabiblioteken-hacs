@@ -102,6 +102,8 @@ class Labels:
     closed_today: str
     staffed: str
     self_service: str
+    # No staffed hours today, but open for self-service: not "closed".
+    not_staffed: str
     # Placeholders: {weekday}, {day}, {month}.
     date_format: str
     weekdays: tuple[str, ...]
@@ -132,6 +134,7 @@ LABELS_EN = Labels(
     closed_today="Closed today",
     staffed="Staffed",
     self_service="Self-service",
+    not_staffed="Not staffed",
     date_format="{weekday} {day} {month}",
     lowercase_inline=False,
     weekdays=(
@@ -164,6 +167,7 @@ LABELS_SV = Labels(
     closed_today="Stängt i dag",
     staffed="Bemannat",
     self_service="Meröppet",
+    not_staffed="Obemannat",
     date_format="{weekday} {day} {month}",
     weekdays=(
         "Måndag",
@@ -196,6 +200,7 @@ LABELS_FI = Labels(
     closed_today="Suljettu tänään",
     staffed="Palveluaika",
     self_service="Omatoimiaika",
+    not_staffed="Ei palveluaikaa",
     date_format="{weekday} {day}. {month}",
     weekdays=(
         "Maanantai",
@@ -227,6 +232,7 @@ LABELS_NB = Labels(
     closed_today="Stengt i dag",
     staffed="Betjent",
     self_service="Meråpent",
+    not_staffed="Ubetjent",
     date_format="{weekday} {day}. {month}",
     weekdays=(
         "Mandag",
@@ -258,6 +264,7 @@ LABELS_NN = Labels(
     closed_today="Stengt i dag",
     staffed="Bemanna",
     self_service="Meirope",
+    not_staffed="Ubemanna",
     date_format="{weekday} {day}. {month}",
     weekdays=(
         "Måndag",
@@ -290,6 +297,7 @@ LABELS_DA = Labels(
     # "Betjent" alone also means "police officer".
     staffed="Bemandet",
     self_service="Åbent bibliotek",
+    not_staffed="Ubemandet",
     date_format="{weekday} {day}. {month}",
     weekdays=(
         "Mandag",
@@ -321,6 +329,7 @@ LABELS_IS = Labels(
     closed_today="Lokað í dag",
     staffed="Mannað",
     self_service="Sjálfsafgreiðsla",
+    not_staffed="Ómannað",
     date_format="{weekday} {day}. {month}",
     weekdays=(
         "Mánudagur",
@@ -353,6 +362,7 @@ LABELS_DE = Labels(
     staffed="Mit Personal",
     # The term libraries in German-speaking countries use for staff-free hours.
     self_service="Open Library",
+    not_staffed="Ohne Personal",
     date_format="{weekday}, {day}. {month}",
     lowercase_inline=False,
     weekdays=(
@@ -386,6 +396,7 @@ LABELS_FR = Labels(
     staffed="Avec personnel",
     # "Libre-service" reads as self-checkout machines in French libraries.
     self_service="Accès autonome",
+    not_staffed="Sans personnel",
     date_format="{weekday} {day} {month}",
     first_day="1er",
     colon="\u00a0: ",
@@ -419,6 +430,7 @@ LABELS_ES = Labels(
     closed_today="Cerrado hoy",
     staffed="Con personal",
     self_service="Autoservicio",
+    not_staffed="Sin personal",
     date_format="{weekday}, {day} de {month}",
     weekdays=(
         "Lunes",
@@ -450,6 +462,7 @@ LABELS_PT = Labels(
     closed_today="Fechado hoje",
     staffed="Com pessoal",
     self_service="Autosserviço",
+    not_staffed="Sem pessoal",
     date_format="{weekday}, {day} de {month}",
     weekdays=(
         "Segunda-feira",
@@ -481,6 +494,7 @@ LABELS_IT = Labels(
     closed_today="Chiuso oggi",
     staffed="Con personale",
     self_service="Self-service",
+    not_staffed="Senza personale",
     date_format="{weekday} {day} {month}",
     first_day="1º",
     weekdays=(
@@ -513,6 +527,7 @@ LABELS_ET = Labels(
     closed_today="Täna suletud",
     staffed="Teenindus",
     self_service="Iseteenindus",
+    not_staffed="Teeninduseta",
     date_format="{weekday}, {day}. {month}",
     weekdays=(
         "Esmaspäev",
@@ -544,6 +559,7 @@ LABELS_LV = Labels(
     closed_today="Šodien slēgts",
     staffed="Ar personālu",
     self_service="Bez personāla",
+    not_staffed="Bez personāla",
     date_format="{weekday}, {day}. {month}",
     weekdays=(
         "Pirmdiena",
@@ -575,6 +591,7 @@ LABELS_LT = Labels(
     closed_today="Šiandien uždaryta",
     staffed="Su personalu",
     self_service="Savitarna",
+    not_staffed="Be personalo",
     date_format="{weekday}, {month} {day} d.",
     weekdays=(
         "Pirmadienis",
@@ -606,6 +623,7 @@ LABELS_PL = Labels(
     closed_today="Dziś zamknięte",
     staffed="Z obsługą",
     self_service="Samoobsługa",
+    not_staffed="Bez obsługi",
     date_format="{weekday}, {day} {month}",
     weekdays=(
         "Poniedziałek",
@@ -812,7 +830,11 @@ def compute_branch_today(
     self_service = [i for i in intervals if i.get("serviceType") == "SelfService"]
     accessible = _merge(staffed + self_service)
 
-    staffed_summary = _summary(staffed, labels)
+    # A Meröppet-only day isn't closed for the staffed view either: you can
+    # get in, there's just nobody working.
+    staffed_summary = (
+        _summary(staffed, labels) if staffed or not self_service else labels.not_staffed
+    )
     self_service_summary = _summary(self_service, labels)
 
     staffed_now = _is_on(staffed, now_hm)
