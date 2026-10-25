@@ -51,7 +51,9 @@ def branch_names(payload: dict[str, Any]) -> list[str]:
     return sorted(names, key=str.lower)
 
 
-def _intervals_for(payload: dict[str, Any], branch: str, date_str: str) -> list[dict]:
+def _intervals_for(
+    payload: dict[str, Any], branch: str, date_str: str
+) -> list[dict[str, Any]]:
     """Merged, de-duplicated opening-hour intervals for a branch on a date."""
     norm = branch.strip().lower()
     entry = next(
@@ -60,8 +62,8 @@ def _intervals_for(payload: dict[str, Any], branch: str, date_str: str) -> list[
     if not entry:
         return []
 
-    items: list[dict] = []
-    seen: set[tuple] = set()
+    items: list[dict[str, Any]] = []
+    seen: set[tuple[Any, ...]] = set()
     for branch_entry in entry.get("branches", []):
         if (branch_entry.get("branchName") or "").strip().lower() != norm:
             continue
@@ -78,7 +80,7 @@ def _intervals_for(payload: dict[str, Any], branch: str, date_str: str) -> list[
     return items
 
 
-def _summary(intervals: list[dict]) -> str:
+def _summary(intervals: list[dict[str, Any]]) -> str:
     parts = [f"{i['from']}–{i['to']}" for i in intervals]
     return ", ".join(parts) if parts else CLOSED
 
@@ -104,9 +106,7 @@ def compute_branch_today(
     self_service_now = any(i["from"] <= now_hm < i["to"] for i in self_service)
     open_now = staffed_now or (include_self_service and self_service_now)
     status = (
-        "staffed"
-        if staffed_now
-        else ("self_service" if self_service_now else "closed")
+        "staffed" if staffed_now else ("self_service" if self_service_now else "closed")
     )
 
     date_label = f"{WEEKDAYS_SV[now.weekday()]} {now.day} {MONTHS_SV[now.month - 1]}"

@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag must match manifest version
+        run: |
+          version=$(jq -r .version custom_components/gotabiblioteken/manifest.json)
+          if [ "${{ github.event.release.tag_name }}" != "v${version}" ]; then
+            echo "::error::tag ${{ github.event.release.tag_name }} != v${version} from manifest.json"
+            exit 1
+          fi
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Checks
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          ruff check .
+          ruff format --check .
+          mypy
+          pytest
+      - name: Build zip
+        run: |
+          mkdir dist
+          cd custom_components/gotabiblioteken
+          zip -r ../../dist/gotabiblioteken.zip . -x '__pycache__/*' '*.pyc'
+      - name: Upload zip to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/gotabiblioteken.zip --clobber

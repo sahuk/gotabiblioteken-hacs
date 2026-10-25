@@ -129,10 +129,28 @@ Götabiblioteken's.
 
 ```bash
 python3 -m venv .venv
-./.venv/bin/pip install -r requirements-test.txt
+./.venv/bin/pip install -r requirements-dev.txt
+./.venv/bin/ruff check . && ./.venv/bin/ruff format --check .
+./.venv/bin/mypy
 ./.venv/bin/pytest
 ```
 
-Tests cover the pure opening-hours logic, the config/options flow, and
-end-to-end entity setup under a real Home Assistant instance, and run in CI
-(`.github/workflows/test.yml`) on every push and pull request.
+Tests cover the pure opening-hours logic, the config/options flow,
+end-to-end entity setup under a real Home Assistant instance, and the HACS /
+hassfest repository conventions. Lint, types and tests run in CI
+(`.github/workflows/test.yml`) on every push and pull request, alongside the
+official HACS and hassfest validators (`.github/workflows/validate.yml`).
+
+### Releasing
+
+Versions follow [SemVer](https://semver.org/); `manifest.json` holds the
+version and releases are tagged `v<version>`. Note changes under
+`Unreleased` in [CHANGELOG.md](CHANGELOG.md), then:
+
+```bash
+./.venv/bin/python scripts/bump_version.py patch   # or minor / major / X.Y.Z
+```
+
+and run the git / `gh release create` commands it prints. Publishing the
+release runs `.github/workflows/release.yml`, which checks the tag against the
+manifest and attaches the `gotabiblioteken.zip` that HACS installs.
