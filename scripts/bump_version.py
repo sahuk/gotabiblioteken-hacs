@@ -56,12 +56,17 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="print, don't write")
     args = parser.parse_args()
 
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    current = manifest["version"]
+    manifest_text = MANIFEST.read_text(encoding="utf-8")
+    current = json.loads(manifest_text)["version"]
     version = next_version(current, args.bump)
     if version == current:
         raise SystemExit(f"version is already {current}")
-    manifest["version"] = version
+    # Replace only the version string, keeping the file's own formatting.
+    manifest_text, count = re.subn(
+        r'("version"\s*:\s*")[^"]*(")', rf"\g<1>{version}\g<2>", manifest_text
+    )
+    if count != 1:
+        raise SystemExit("manifest.json must have exactly one version key")
     changelog = roll_changelog(
         CHANGELOG.read_text(encoding="utf-8"), version, date.today()
     )
@@ -71,9 +76,7 @@ def main() -> int:
         print("(dry run, nothing written)")
         return 0
 
-    MANIFEST.write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
+    MANIFEST.write_text(manifest_text, encoding="utf-8")
     CHANGELOG.write_text(changelog, encoding="utf-8")
     print(
         "\nNext:\n"
