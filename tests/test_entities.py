@@ -72,11 +72,12 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     dev_reg = dr.async_get(hass)
     ent_reg = er.async_get(hass)
     devices = dr.async_entries_for_config_entry(dev_reg, entry.entry_id)
-    assert sorted(str(d.name) for d in devices) == [BORENSBERG, MOTALA]
+    # Short device names: entity names lead with the place, not "bibliotek".
+    assert sorted(str(d.name) for d in devices) == ["Borensberg", "Motala"]
     # Each device links to the library's own page ("Visit" in the device view).
     assert {d.name: d.configuration_url for d in devices} == {
-        BORENSBERG: "https://www.gotabiblioteken.se/borensbergs-bibliotek",
-        MOTALA: "https://www.gotabiblioteken.se/motala-huvudbibliotek",
+        "Borensberg": "https://www.gotabiblioteken.se/borensbergs-bibliotek",
+        "Motala": "https://www.gotabiblioteken.se/motala-huvudbibliotek",
     }
     for device in devices:
         entities = er.async_entries_for_device(
@@ -89,14 +90,15 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
         ]
 
     # Entity IDs are "<device>_<translated name>" (test hass runs in English).
-    assert _entity_id(hass, entry, MOTALA, "hours") == (
-        "sensor.motala_bibliotek_opening_hours"
-    )
-    assert _entity_id(hass, entry, MOTALA, "open") == (
-        "binary_sensor.motala_bibliotek_open"
-    )
+    assert _entity_id(hass, entry, MOTALA, "hours") == ("sensor.motala_opening_hours")
+    assert _entity_id(hass, entry, MOTALA, "open") == ("binary_sensor.motala_open")
 
     hours = _state(hass, entry, MOTALA, "hours")
+    # What dashboards show: the library first, so a cut-off name stays useful.
+    assert hours.attributes["friendly_name"] == "Motala Opening hours"
+    assert _state(hass, entry, MOTALA, "open").attributes["friendly_name"] == (
+        "Motala Open"
+    )
     assert hours.state == "10:00–19:00"
     assert hours.attributes["branch"] == MOTALA
     assert hours.attributes["website"] == (
@@ -120,12 +122,12 @@ async def test_swedish_home_assistant_gets_swedish_names_and_text(
     entry = await _setup(hass, _entry([BORENSBERG]), now="2026-10-20 22:00:00")
 
     hours_id = _entity_id(hass, entry, BORENSBERG, "hours")
-    assert hours_id == "sensor.borensbergs_bibliotek_oppettider"
+    assert hours_id == "sensor.borensberg_oppettider"
     assert _entity_id(hass, entry, BORENSBERG, "open") == (
-        "binary_sensor.borensbergs_bibliotek_oppet"
+        "binary_sensor.borensberg_oppet"
     )
     assert _entity_id(hass, entry, BORENSBERG, "staffed") == (
-        "binary_sensor.borensbergs_bibliotek_bemannat"
+        "binary_sensor.borensberg_bemannat"
     )
     hours = _state(hass, entry, BORENSBERG, "hours")
     assert hours.state == "09:00–14:00, Meröppet 14:00–21:00"
@@ -179,7 +181,7 @@ async def test_removing_favorite_removes_its_device(hass: HomeAssistant) -> None
         await hass.async_block_till_done()
 
     devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
-    assert [d.name for d in devices] == [MOTALA]
+    assert [d.name for d in devices] == ["Motala"]
     assert er.async_get(hass).async_get(staffed_id) is None
 
 
@@ -191,7 +193,7 @@ async def test_stale_device_removed_even_if_api_is_down(hass: HomeAssistant) -> 
         await hass.async_block_till_done()
 
     devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
-    assert [d.name for d in devices] == [MOTALA]
+    assert [d.name for d in devices] == ["Motala"]
 
 
 async def test_migrates_v1_entry(hass: HomeAssistant) -> None:
@@ -216,7 +218,7 @@ async def test_migrates_v1_entry(hass: HomeAssistant) -> None:
     assert entry.data == {CONF_BRANCHES: [BORENSBERG]}
     assert er.async_get(hass).async_get(old_entity.entity_id) is None
     devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
-    assert [d.name for d in devices] == [BORENSBERG]
+    assert [d.name for d in devices] == ["Borensberg"]
     assert _state(hass, entry, BORENSBERG, "open").state == "on"
 
 

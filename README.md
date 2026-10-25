@@ -43,7 +43,10 @@ Go to **Settings → Devices & services → + Add integration** and search for
    fetched live from the API).
 2. Submit.
 
-Each favorite becomes a device named after the library, with a **Visit**
+Each favorite becomes a device named after its place, e.g. **Motala** or
+**Östra Ryd** (no "bibliotek"), so every entity name starts with what tells
+libraries apart, like "Motala Open", and stays readable when a dashboard card
+cuts it off. The device has a **Visit**
 link to the library's page on gotabiblioteken.se. Change your favorites
 any time with the integration's **Configure** button; libraries you remove
 disappear along with their device.
@@ -58,9 +61,9 @@ setup:
 
 | Entity (English) | Swedish setup | State | Attributes |
 | --- | --- | --- | --- |
-| `sensor.<library>_opening_hours` | `…_oppettider` | today's shifts in time order, e.g. `09:00–14:00, Self-service 14:00–21:00`, or `Closed` | see below |
-| `binary_sensor.<library>_open` | `…_oppet` | open/closed (door): open whenever you can get in, during staffed **or** Meröppet hours | `hours`: the combined opening window, e.g. `09:00–21:00` |
-| `binary_sensor.<library>_staffed` | `…_bemannat` | **disabled by default.** Yes/No: whether staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
+| `sensor.<place>_opening_hours` | `…_oppettider` | today's shifts in time order, e.g. `09:00–14:00, Self-service 14:00–21:00`, or `Closed` | see below |
+| `binary_sensor.<place>_open` | `…_oppet` | open/closed (door): open whenever you can get in, during staffed **or** Meröppet hours | `hours`: the combined opening window, e.g. `09:00–21:00` |
+| `binary_sensor.<place>_staffed` | `…_bemannat` | **disabled by default.** Yes/No: whether staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
 
 Each of these is on exactly when the current time falls inside its own
 `hours` attribute, so the state never disagrees with the hours shown.
@@ -98,8 +101,8 @@ type: markdown
 title: Opening hours today
 content: |
   {% for e in [
-    'sensor.linkopings_huvudbibliotek_opening_hours',
-    'sensor.motala_bibliotek_opening_hours'
+    'sensor.linkoping_opening_hours',
+    'sensor.motala_opening_hours'
   ] %}
   {{ state_attr(e, 'hours_markdown') }}
 
@@ -112,9 +115,9 @@ content: |
 type: entities
 title: Motala bibliotek
 entities:
-  - sensor.motala_bibliotek_opening_hours
-  - binary_sensor.motala_bibliotek_open
-  - binary_sensor.motala_bibliotek_staffed  # once enabled
+  - sensor.motala_opening_hours
+  - binary_sensor.motala_open
+  - binary_sensor.motala_staffed  # once enabled
 ```
 
 ## API notes
