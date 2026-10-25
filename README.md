@@ -68,13 +68,14 @@ active at setup, e.g. for English and Swedish:
 | `sensor.<place>_opening_hours` | `…_oppettider` | today's shifts in time order, e.g. `09:00–14:00, Self-service 14:00–21:00`, or `Closed` | see below |
 | `binary_sensor.<place>_open` | `…_oppet` | open/closed (door): open whenever you can get in, during staffed **or** Meröppet hours | `hours`: the combined opening window, e.g. `09:00–21:00` |
 | `binary_sensor.<place>_staffed` | `…_bemannat` | **disabled by default.** Yes/No: whether staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
+| `sensor.<place>_staffed_hours` | `…_bemannade_tider` | **disabled by default.** Today's staffed hours only, e.g. `09:00–14:00`; `Not staffed` on a Meröppet-only day, `Closed` when closed | – |
 
 Each of these is on exactly when the current time falls inside its own
 `hours` attribute, so the state never disagrees with the hours shown.
 
-To get the staffed sensor for a library, open the library's device under
+To get the staffed sensors for a library, open the library's device under
 **Settings → Devices & services → Götabiblioteken**, select the **Staffed**
-entity, and turn on **Enabled** in its settings.
+and **Staffed hours** entities, and turn on **Enabled** in their settings.
 
 Attributes of the hours sensor:
 

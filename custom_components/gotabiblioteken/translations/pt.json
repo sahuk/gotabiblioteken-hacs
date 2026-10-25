@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Horário"
+      },
+      "staffed_hours": {
+        "name": "Horário com pessoal"
       }
     }
   }

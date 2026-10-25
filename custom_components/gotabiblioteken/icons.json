@@ -11,6 +11,9 @@
     "sensor": {
       "hours": {
         "default": "mdi:clock-outline"
+      },
+      "staffed_hours": {
+        "default": "mdi:account-clock-outline"
       }
     }
   }

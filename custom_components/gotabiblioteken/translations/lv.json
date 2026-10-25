@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Darba laiks"
+      },
+      "staffed_hours": {
+        "name": "Laiks ar personālu"
       }
     }
   }

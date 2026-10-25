@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Åpningstider"
+      },
+      "staffed_hours": {
+        "name": "Betjente tider"
       }
     }
   }

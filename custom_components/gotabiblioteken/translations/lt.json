@@ -41,6 +41,9 @@
     "sensor": {
       "hours": {
         "name": "Darbo laikas"
+      },
+      "staffed_hours": {
+        "name": "Laikas su personalu"
       }
     }
   }

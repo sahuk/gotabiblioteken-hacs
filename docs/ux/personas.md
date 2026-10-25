@@ -44,7 +44,9 @@ So staffed-only is the exception, needed by people who rely on in-person help
    open/closed sensor (open during staffed *or* Meröppet hours).
 3. Each library also gets a **Staffed** (Bemannat, Yes/No) sensor, created
    **disabled**. Those who need in-person support enable it per library.
-   It never shows "closed" while the library is open for Meröppet.
+   A **Staffed hours** sensor, also created disabled, lists today's staffed
+   hours. Neither shows "closed" while the library is open for Meröppet:
+   that day reads "Not staffed" (Obemannat).
 4. **Consistency:** each open/closed entity is on exactly when the current
    time falls inside the hours it shows in its own `hours` attribute. The
    state and the listed hours never disagree.

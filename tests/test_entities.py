@@ -25,6 +25,7 @@ PLATFORM_BY_KEY = {
     "hours": "sensor",
     "open": "binary_sensor",
     "staffed": "binary_sensor",
+    "staffed_hours": "sensor",
 }
 
 
@@ -66,7 +67,7 @@ def _state(hass: HomeAssistant, entry, branch: str, key: str):
     return state
 
 
-async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -> None:
+async def test_one_device_with_four_entities_per_library(hass: HomeAssistant) -> None:
     entry = await _setup(hass, _entry([MOTALA, BORENSBERG]))
 
     dev_reg = dr.async_get(hass)
@@ -87,6 +88,7 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
             "hours",
             "open",
             "staffed",
+            "staffed_hours",
         ]
 
     # Entity IDs are "<device>_<translated name>" (test hass runs in English).
@@ -113,6 +115,11 @@ async def test_one_device_with_three_entities_per_library(hass: HomeAssistant) -
     assert staffed is not None
     assert staffed.disabled_by is er.RegistryEntryDisabler.INTEGRATION
     assert hass.states.get(staffed.entity_id) is None
+    # ...and so is its hours companion.
+    staffed_hours = ent_reg.async_get(_entity_id(hass, entry, MOTALA, "staffed_hours"))
+    assert staffed_hours is not None
+    assert staffed_hours.entity_id == "sensor.motala_staffed_hours"
+    assert staffed_hours.disabled_by is er.RegistryEntryDisabler.INTEGRATION
 
 
 async def test_swedish_home_assistant_gets_swedish_names_and_text(
@@ -227,3 +234,12 @@ async def test_unload(hass: HomeAssistant) -> None:
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
     assert DOMAIN not in hass.data or entry.entry_id not in hass.data.get(DOMAIN, {})
+
+
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
+async def test_staffed_hours_sensor(hass: HomeAssistant) -> None:
+    entry = await _setup(hass, _entry([BORENSBERG]))
+    staffed_hours = _state(hass, entry, BORENSBERG, "staffed_hours")
+    # Only the staffed part of "09:00–14:00, Self-service 14:00–21:00".
+    assert staffed_hours.state == "09:00–14:00"
+    assert staffed_hours.attributes["friendly_name"] == "Borensberg Staffed hours"
