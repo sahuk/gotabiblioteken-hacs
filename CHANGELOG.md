@@ -11,10 +11,10 @@ release is tagged `v<version>`.
 ### Changed (breaking)
 
 - Each favorite library is now its own device with **Opening hours**
-  (`sensor.<library>_opening_hours`) and **Open**
-  (`binary_sensor.<library>_open`, an open/closed door that is open during
+  (`sensor.<place>_opening_hours`) and **Open**
+  (`binary_sensor.<place>_open`, an open/closed door that is open during
   staffed or Meröppet hours). A **Staffed** sensor
-  (`binary_sensor.<library>_staffed`, Yes/No) is created disabled, for people
+  (`binary_sensor.<place>_staffed`, Yes/No) is created disabled, for people
   who need in-person support to enable per library. On a Swedish Home
   Assistant the names and IDs are Swedish (Öppettider, Öppet, Bemannat).
   Entity IDs change: the old entities are removed on upgrade (their history
@@ -36,6 +36,10 @@ release is tagged `v<version>`.
 
 ### Added
 
+- Library devices use a short place name ("Motala", "Borensberg",
+  "Agora") so entity names start with what tells libraries apart and stay
+  readable when a dashboard card cuts them off ("Motala Open"). The full name
+  stays in the `branch` attribute.
 - Each library links to its page on gotabiblioteken.se: the device's
   **Visit** link and a `website` attribute on the hours sensor.
 - `scripts/type_coverage.py`: measures how much of the code mypy types

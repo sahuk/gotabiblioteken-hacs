@@ -37,6 +37,10 @@ uv run ruff check --fix . && uv run ruff format . && uv run mypy \
   integration generates (states, attributes) goes through `data.Labels` /
   `labels_for(hass.config.language)`: Swedish only for a Swedish Home
   Assistant, English otherwise. When in doubt, use English.
+- Library display names come from `libraries.py` (short place name, e.g.
+  "Motala", used as the device name so entity names start with it). If the
+  API adds a branch, add its short name and website there; a test keeps the
+  table complete and the short names unique.
 
 ## Skills in the loop
 

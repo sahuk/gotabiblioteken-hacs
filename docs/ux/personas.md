@@ -53,3 +53,6 @@ So staffed-only is the exception, needed by people who rely on in-person help
 7. Names and generated text follow Home Assistant's language: Swedish for a
    Swedish setup, English for every other language. Nothing user-facing is
    hard-coded Swedish.
+8. Names lead with what tells libraries apart: the place ("Motala Open",
+   "Agora Opening hours"), not a shared word like "bibliotek", so a name cut
+   off on a dashboard card still identifies the library.

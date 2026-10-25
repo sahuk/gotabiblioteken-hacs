@@ -14,7 +14,7 @@ from homeassistant.util import dt as dt_util, slugify
 from .const import CONF_BRANCHES, DOMAIN, LOCAL_REFRESH_INTERVAL
 from .coordinator import GotaCoordinator
 from .data import BranchToday, compute_branch_today, labels_for
-from .websites import website_for
+from .libraries import short_name, website_for
 
 
 def favorite_branches(entry: ConfigEntry) -> list[str]:
@@ -46,7 +46,9 @@ class GotaBranchEntity(CoordinatorEntity[GotaCoordinator]):
         self._attr_unique_id = f"{branch_device_id(entry, branch)}_{key}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, branch_device_id(entry, branch))},
-            name=branch.strip(),
+            # Short ("Motala", not "Motala bibliotek") so entity names lead
+            # with what tells libraries apart, even when a card cuts them off.
+            name=short_name(branch),
             manufacturer="Axiell",
             configuration_url=website_for(branch),
             entry_type=DeviceEntryType.SERVICE,
