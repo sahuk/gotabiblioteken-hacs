@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Valitse suosikkikirjastosi. Jokaisesta tulee laite, joka näyttää päivän aukioloajat ja sen, onko kirjasto auki juuri nyt.",
+        "data": {
+          "branches": "Suosikkikirjastot"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken on jo määritetty.",
+      "cannot_connect": "Aukioloaikojen rajapintaan ei saatu yhteyttä."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Muokkaa suosikkikirjastojasi.",
+        "data": {
+          "branches": "Suosikkikirjastot"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Auki"
+      },
+      "staffed": {
+        "name": "Palveluaika",
+        "state": {
+          "on": "Kyllä",
+          "off": "Ei"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Aukioloajat"
+      }
+    }
+  }
+}

@@ -3,14 +3,14 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Välj de bibliotek du vill ha som favoriter. Varje bibliotek blir en enhet med dagens öppettider och om det är bemannat eller meröppet just nu.",
+        "description": "Välj dina favoritbibliotek. Varje bibliotek blir en enhet som visar dagens öppettider och om biblioteket är öppet just nu.",
         "data": {
           "branches": "Favoritbibliotek"
         }
       }
     },
     "abort": {
-      "already_configured": "Götabiblioteken är redan konfigurerat.",
+      "already_configured": "Integrationen är redan konfigurerad.",
       "cannot_connect": "Kunde inte nå API:et för öppettider."
     }
   },
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Götabiblioteken",
-        "description": "Uppdatera dina favoritbibliotek.",
+        "description": "Ändra dina favoritbibliotek.",
         "data": {
           "branches": "Favoritbibliotek"
         }

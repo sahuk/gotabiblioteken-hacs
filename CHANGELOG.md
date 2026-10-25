@@ -36,6 +36,15 @@ release is tagged `v<version>`.
 
 ### Added
 
+- 14 more languages: Finnish, Norwegian (Bokmål and Nynorsk), Danish,
+  Icelandic, German, French, Spanish, Portuguese, Italian, Estonian, Latvian,
+  Lithuanian and Polish. Each covers entity names, the setup dialog, and
+  generated text (closed, weekdays, months, date format, self-service label).
+  Generated text follows each language's conventions: lowercase weekdays and
+  labels mid-line where the language writes them so, French "1er" and
+  "Avec personnel : …", Italian "1º". Drafts flagged for native review in
+  `TRANSLATIONS.md`, which also tracks Sweden's other minority languages
+  (waiting on Home Assistant support).
 - Library devices use a short place name ("Motala", "Borensberg",
   "Agora") so entity names start with what tells libraries apart and stay
   readable when a dashboard card cuts them off ("Motala Open"). The full name

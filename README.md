@@ -54,10 +54,14 @@ disappear along with their device.
 ## What each library gives you
 
 Entity names and the text the integration generates (states, weekdays,
-labels) follow Home Assistant's language: **Swedish** when Home Assistant is
-set to Swedish, **English** otherwise. Library names are proper nouns and stay
-as the library calls itself. Entity IDs are created in the language active at
-setup:
+labels) follow Home Assistant's language: Swedish, English, the Nordic
+languages (Finnish, Norwegian Bokmål and Nynorsk, Danish, Icelandic), the
+major continental EU languages (German, French, Spanish, Portuguese,
+Italian), and Estonian, Latvian, Lithuanian and Polish, with English for any
+other language (see [TRANSLATIONS.md](TRANSLATIONS.md),
+including which translations still need native review). Library names are
+place names and aren't translated. Entity IDs are created in the language
+active at setup, e.g. for English and Swedish:
 
 | Entity (English) | Swedish setup | State | Attributes |
 | --- | --- | --- | --- |

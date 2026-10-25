@@ -130,7 +130,7 @@ async def test_swedish_home_assistant_gets_swedish_names_and_text(
         "binary_sensor.borensberg_bemannat"
     )
     hours = _state(hass, entry, BORENSBERG, "hours")
-    assert hours.state == "09:00–14:00, Meröppet 14:00–21:00"
+    assert hours.state == "09:00–14:00, meröppet 14:00–21:00"
     assert hours.attributes["weekday"] == "Tisdag"
 
 

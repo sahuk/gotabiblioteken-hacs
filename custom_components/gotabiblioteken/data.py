@@ -1,7 +1,7 @@
 """Pure opening-hours computation.
 
 No Home Assistant imports on purpose: this module is unit-testable on its own.
-Generated text is Swedish or English (`labels_for`); entity names are not set
+Generated text follows Home Assistant's language (`labels_for`); entity names are not set
 here but come from the translation files.
 Merges duplicate branch entries, de-duplicates identical shifts, and splits
 staffed from self-service hours.
@@ -89,43 +89,49 @@ AccessKey = Literal["staffed", "open"]
 
 @dataclass(frozen=True)
 class Labels:
-    """Generated text (states, attributes) in one language."""
+    """Generated text (states, attributes) in one language.
+
+    Labels and weekdays are written as they look at the start of a text
+    ("Tisdag", "Meröppet"). Mid-line (after "—" or ", ") they get a lowercase
+    first letter unless `lowercase_inline` is off, as in English and German.
+    """
 
     closed: str
     closed_today: str
     staffed: str
     self_service: str
+    # Placeholders: {weekday}, {day}, {month}.
+    date_format: str
     weekdays: tuple[str, ...]
+    # In the form the date label uses (genitive/partitive where the
+    # language needs it: Finnish "lokakuuta", Polish "października").
     months: tuple[str, ...]
+    lowercase_inline: bool = True
+    # How the 1st of the month is written where it isn't plain "1" (French "1er").
+    first_day: str = "1"
+    # Label/value separator (French typography: no-break space before ":").
+    colon: str = ": "
 
+    def inline(self, text: str) -> str:
+        """`text` as written in the middle of a line."""
+        return text[:1].lower() + text[1:] if self.lowercase_inline else text
 
-LABELS_SV = Labels(
-    closed="Stängt",
-    closed_today="Stängt idag",
-    staffed="Bemannat",
-    self_service="Meröppet",
-    weekdays=("Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"),
-    months=(
-        "januari",
-        "februari",
-        "mars",
-        "april",
-        "maj",
-        "juni",
-        "juli",
-        "augusti",
-        "september",
-        "oktober",
-        "november",
-        "december",
-    ),
-)
+    def date_label(self, now: datetime) -> str:
+        """The date as it reads at the start of a text, e.g. "Tisdag 20 oktober"."""
+        return self.date_format.format(
+            weekday=self.weekdays[now.weekday()],
+            day=self.first_day if now.day == 1 else now.day,
+            month=self.months[now.month - 1],
+        )
+
 
 LABELS_EN = Labels(
     closed="Closed",
     closed_today="Closed today",
     staffed="Staffed",
     self_service="Self-service",
+    date_format="{weekday} {day} {month}",
+    lowercase_inline=False,
     weekdays=(
         "Monday",
         "Tuesday",
@@ -151,10 +157,510 @@ LABELS_EN = Labels(
     ),
 )
 
+LABELS_SV = Labels(
+    closed="Stängt",
+    closed_today="Stängt i dag",
+    staffed="Bemannat",
+    self_service="Meröppet",
+    date_format="{weekday} {day} {month}",
+    weekdays=(
+        "Måndag",
+        "Tisdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lördag",
+        "Söndag",
+    ),
+    months=(
+        "januari",
+        "februari",
+        "mars",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "augusti",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
+)
+
+# Finnish is also a national minority language of Sweden.
+LABELS_FI = Labels(
+    closed="Suljettu",
+    closed_today="Suljettu tänään",
+    staffed="Palveluaika",
+    self_service="Omatoimiaika",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Maanantai",
+        "Tiistai",
+        "Keskiviikko",
+        "Torstai",
+        "Perjantai",
+        "Lauantai",
+        "Sunnuntai",
+    ),
+    months=(
+        "tammikuuta",
+        "helmikuuta",
+        "maaliskuuta",
+        "huhtikuuta",
+        "toukokuuta",
+        "kesäkuuta",
+        "heinäkuuta",
+        "elokuuta",
+        "syyskuuta",
+        "lokakuuta",
+        "marraskuuta",
+        "joulukuuta",
+    ),
+)
+
+LABELS_NB = Labels(
+    closed="Stengt",
+    closed_today="Stengt i dag",
+    staffed="Betjent",
+    self_service="Meråpent",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "mars",
+        "april",
+        "mai",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "desember",
+    ),
+)
+
+LABELS_NN = Labels(
+    closed="Stengt",
+    closed_today="Stengt i dag",
+    staffed="Bemanna",
+    self_service="Meirope",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Måndag",
+        "Tysdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Laurdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "mars",
+        "april",
+        "mai",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "desember",
+    ),
+)
+
+LABELS_DA = Labels(
+    closed="Lukket",
+    closed_today="Lukket i dag",
+    # "Betjent" alone also means "police officer".
+    staffed="Bemandet",
+    self_service="Åbent bibliotek",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mandag",
+        "Tirsdag",
+        "Onsdag",
+        "Torsdag",
+        "Fredag",
+        "Lørdag",
+        "Søndag",
+    ),
+    months=(
+        "januar",
+        "februar",
+        "marts",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
+)
+
+LABELS_IS = Labels(
+    closed="Lokað",
+    closed_today="Lokað í dag",
+    staffed="Mannað",
+    self_service="Sjálfsafgreiðsla",
+    date_format="{weekday} {day}. {month}",
+    weekdays=(
+        "Mánudagur",
+        "Þriðjudagur",
+        "Miðvikudagur",
+        "Fimmtudagur",
+        "Föstudagur",
+        "Laugardagur",
+        "Sunnudagur",
+    ),
+    months=(
+        "janúar",
+        "febrúar",
+        "mars",
+        "apríl",
+        "maí",
+        "júní",
+        "júlí",
+        "ágúst",
+        "september",
+        "október",
+        "nóvember",
+        "desember",
+    ),
+)
+
+LABELS_DE = Labels(
+    closed="Geschlossen",
+    closed_today="Heute geschlossen",
+    staffed="Mit Personal",
+    # The term libraries in German-speaking countries use for staff-free hours.
+    self_service="Open Library",
+    date_format="{weekday}, {day}. {month}",
+    lowercase_inline=False,
+    weekdays=(
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag",
+        "Sonntag",
+    ),
+    months=(
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember",
+    ),
+)
+
+LABELS_FR = Labels(
+    closed="Fermé",
+    closed_today="Fermé aujourd'hui",
+    staffed="Avec personnel",
+    # "Libre-service" reads as self-checkout machines in French libraries.
+    self_service="Accès autonome",
+    date_format="{weekday} {day} {month}",
+    first_day="1er",
+    colon="\u00a0: ",
+    weekdays=(
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi",
+        "Dimanche",
+    ),
+    months=(
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+    ),
+)
+
+LABELS_ES = Labels(
+    closed="Cerrado",
+    closed_today="Cerrado hoy",
+    staffed="Con personal",
+    self_service="Autoservicio",
+    date_format="{weekday}, {day} de {month}",
+    weekdays=(
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo",
+    ),
+    months=(
+        "enero",
+        "febrero",
+        "marzo",
+        "abril",
+        "mayo",
+        "junio",
+        "julio",
+        "agosto",
+        "septiembre",
+        "octubre",
+        "noviembre",
+        "diciembre",
+    ),
+)
+
+LABELS_PT = Labels(
+    closed="Fechado",
+    closed_today="Fechado hoje",
+    staffed="Com pessoal",
+    self_service="Autosserviço",
+    date_format="{weekday}, {day} de {month}",
+    weekdays=(
+        "Segunda-feira",
+        "Terça-feira",
+        "Quarta-feira",
+        "Quinta-feira",
+        "Sexta-feira",
+        "Sábado",
+        "Domingo",
+    ),
+    months=(
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+    ),
+)
+
+LABELS_IT = Labels(
+    closed="Chiuso",
+    closed_today="Chiuso oggi",
+    staffed="Con personale",
+    self_service="Self-service",
+    date_format="{weekday} {day} {month}",
+    first_day="1º",
+    weekdays=(
+        "Lunedì",
+        "Martedì",
+        "Mercoledì",
+        "Giovedì",
+        "Venerdì",
+        "Sabato",
+        "Domenica",
+    ),
+    months=(
+        "gennaio",
+        "febbraio",
+        "marzo",
+        "aprile",
+        "maggio",
+        "giugno",
+        "luglio",
+        "agosto",
+        "settembre",
+        "ottobre",
+        "novembre",
+        "dicembre",
+    ),
+)
+
+LABELS_ET = Labels(
+    closed="Suletud",
+    closed_today="Täna suletud",
+    staffed="Teenindus",
+    self_service="Iseteenindus",
+    date_format="{weekday}, {day}. {month}",
+    weekdays=(
+        "Esmaspäev",
+        "Teisipäev",
+        "Kolmapäev",
+        "Neljapäev",
+        "Reede",
+        "Laupäev",
+        "Pühapäev",
+    ),
+    months=(
+        "jaanuar",
+        "veebruar",
+        "märts",
+        "aprill",
+        "mai",
+        "juuni",
+        "juuli",
+        "august",
+        "september",
+        "oktoober",
+        "november",
+        "detsember",
+    ),
+)
+
+LABELS_LV = Labels(
+    closed="Slēgts",
+    closed_today="Šodien slēgts",
+    staffed="Ar personālu",
+    self_service="Bez personāla",
+    date_format="{weekday}, {day}. {month}",
+    weekdays=(
+        "Pirmdiena",
+        "Otrdiena",
+        "Trešdiena",
+        "Ceturtdiena",
+        "Piektdiena",
+        "Sestdiena",
+        "Svētdiena",
+    ),
+    months=(
+        "janvāris",
+        "februāris",
+        "marts",
+        "aprīlis",
+        "maijs",
+        "jūnijs",
+        "jūlijs",
+        "augusts",
+        "septembris",
+        "oktobris",
+        "novembris",
+        "decembris",
+    ),
+)
+
+LABELS_LT = Labels(
+    closed="Uždaryta",
+    closed_today="Šiandien uždaryta",
+    staffed="Su personalu",
+    self_service="Savitarna",
+    date_format="{weekday}, {month} {day} d.",
+    weekdays=(
+        "Pirmadienis",
+        "Antradienis",
+        "Trečiadienis",
+        "Ketvirtadienis",
+        "Penktadienis",
+        "Šeštadienis",
+        "Sekmadienis",
+    ),
+    months=(
+        "sausio",
+        "vasario",
+        "kovo",
+        "balandžio",
+        "gegužės",
+        "birželio",
+        "liepos",
+        "rugpjūčio",
+        "rugsėjo",
+        "spalio",
+        "lapkričio",
+        "gruodžio",
+    ),
+)
+
+LABELS_PL = Labels(
+    closed="Zamknięte",
+    closed_today="Dziś zamknięte",
+    staffed="Z obsługą",
+    self_service="Samoobsługa",
+    date_format="{weekday}, {day} {month}",
+    weekdays=(
+        "Poniedziałek",
+        "Wtorek",
+        "Środa",
+        "Czwartek",
+        "Piątek",
+        "Sobota",
+        "Niedziela",
+    ),
+    months=(
+        "stycznia",
+        "lutego",
+        "marca",
+        "kwietnia",
+        "maja",
+        "czerwca",
+        "lipca",
+        "sierpnia",
+        "września",
+        "października",
+        "listopada",
+        "grudnia",
+    ),
+)
+
+# Keyed by Home Assistant language code. Sweden's other national minority
+# languages (Meänkieli, Sami, Romani, Yiddish) can't be selected as Home
+# Assistant's language yet; see TRANSLATIONS.md.
+LABELS: dict[str, Labels] = {
+    "en": LABELS_EN,
+    "sv": LABELS_SV,
+    "fi": LABELS_FI,
+    "nb": LABELS_NB,
+    "nn": LABELS_NN,
+    "da": LABELS_DA,
+    "is": LABELS_IS,
+    "de": LABELS_DE,
+    "fr": LABELS_FR,
+    "es": LABELS_ES,
+    "pt": LABELS_PT,
+    "it": LABELS_IT,
+    "et": LABELS_ET,
+    "lv": LABELS_LV,
+    "lt": LABELS_LT,
+    "pl": LABELS_PL,
+}
+
 
 def labels_for(language: str) -> Labels:
-    """Swedish for a Swedish Home Assistant, English for everything else."""
-    return LABELS_SV if language.lower().split("-")[0] == "sv" else LABELS_EN
+    """Labels for Home Assistant's language; English when it isn't covered.
+
+    Exact match only, like Home Assistant's own translation lookup: a
+    regional variant without its own file ("pt-BR", "es-419") gets English
+    entity names, so its generated text is English too, not a mix.
+    """
+    return LABELS.get(language, LABELS_EN)
 
 
 def branch_names(payload: ApiPayload) -> list[str]:
@@ -229,7 +735,9 @@ def _day_summary(intervals: Sequence[ApiInterval], labels: Labels) -> str:
         f"{i['from']}–{i['to']}"
         for i in sorted(intervals, key=lambda i: (i["from"], i["to"]))
     ]
-    return ", ".join(parts) if parts else labels.closed
+    if not parts:
+        return labels.closed
+    return ", ".join([parts[0], *(labels.inline(p) for p in parts[1:])])
 
 
 def compute_branch_today(
@@ -262,8 +770,7 @@ def compute_branch_today(
         "staffed" if staffed_now else ("self_service" if accessible_now else "closed")
     )
 
-    weekday = labels.weekdays[now.weekday()]
-    date_label = f"{weekday} {now.day} {labels.months[now.month - 1]}"
+    date_label = labels.date_label(now)
 
     shifts: list[Shift] = [
         {
@@ -280,11 +787,11 @@ def compute_branch_today(
         for i in intervals
     ]
 
-    lines = [f"**{branch.strip()}** — {date_label}"]
+    lines = [f"**{branch.strip()}** — {labels.inline(date_label)}"]
     if staffed:
-        lines.append(f"{labels.staffed}: {staffed_summary}")
+        lines.append(f"{labels.staffed}{labels.colon}{staffed_summary}")
     if self_service:
-        lines.append(f"{labels.self_service}: {self_service_summary}")
+        lines.append(f"{labels.self_service}{labels.colon}{self_service_summary}")
     if not staffed and not self_service:
         lines.append(labels.closed_today)
     hours_markdown = "  \n".join(lines)
@@ -297,7 +804,7 @@ def compute_branch_today(
             "branch": branch.strip(),
             "website": website_for(branch),
             "date": date_str,
-            "weekday": weekday,
+            "weekday": labels.weekdays[now.weekday()],
             "date_label": date_label,
             "status": status,
             "staffed_summary": staffed_summary,

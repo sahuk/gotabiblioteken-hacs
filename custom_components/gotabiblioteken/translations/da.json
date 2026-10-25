@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Vælg dine foretrukne biblioteker. Hvert bibliotek bliver en enhed, der viser dagens åbningstider, og om biblioteket er åbent lige nu.",
+        "data": {
+          "branches": "Foretrukne biblioteker"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken er allerede sat op.",
+      "cannot_connect": "Kunne ikke få forbindelse til API'et for åbningstider."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Ret dine foretrukne biblioteker.",
+        "data": {
+          "branches": "Foretrukne biblioteker"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Åbent"
+      },
+      "staffed": {
+        "name": "Bemandet",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Åbningstider"
+      }
+    }
+  }
+}

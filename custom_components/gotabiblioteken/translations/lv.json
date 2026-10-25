@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Izvēlieties savas iecienītās bibliotēkas. Katra kļūst par ierīci, kas rāda šodienas darba laiku un to, vai bibliotēka pašlaik ir atvērta.",
+        "data": {
+          "branches": "Iecienītās bibliotēkas"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken jau ir iestatīts.",
+      "cannot_connect": "Neizdevās sazināties ar darba laika API."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Mainiet savas iecienītās bibliotēkas.",
+        "data": {
+          "branches": "Iecienītās bibliotēkas"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Atvērts"
+      },
+      "staffed": {
+        "name": "Ar personālu",
+        "state": {
+          "on": "Jā",
+          "off": "Nē"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Darba laiks"
+      }
+    }
+  }
+}

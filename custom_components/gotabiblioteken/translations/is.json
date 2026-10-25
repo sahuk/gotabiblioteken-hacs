@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Veldu uppáhaldsbókasöfnin þín. Hvert safn verður að tæki sem sýnir opnunartíma dagsins og hvort safnið sé opið núna.",
+        "data": {
+          "branches": "Uppáhaldsbókasöfn"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken er þegar uppsett.",
+      "cannot_connect": "Ekki náðist samband við API fyrir opnunartíma."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Breyttu vali á uppáhaldsbókasöfnum.",
+        "data": {
+          "branches": "Uppáhaldsbókasöfn"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Opið"
+      },
+      "staffed": {
+        "name": "Mannað",
+        "state": {
+          "on": "Já",
+          "off": "Nei"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Opnunartími"
+      }
+    }
+  }
+}

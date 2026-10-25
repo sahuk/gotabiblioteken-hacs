@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Götabiblioteken",
+        "description": "Sélectionnez vos bibliothèques favorites. Chacune devient un appareil indiquant les horaires d'ouverture du jour et si la bibliothèque est ouverte en ce moment.",
+        "data": {
+          "branches": "Bibliothèques favorites"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Götabiblioteken est déjà configuré.",
+      "cannot_connect": "Impossible de joindre l'API des horaires d'ouverture."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Götabiblioteken",
+        "description": "Modifiez vos bibliothèques favorites.",
+        "data": {
+          "branches": "Bibliothèques favorites"
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "open": {
+        "name": "Ouvert"
+      },
+      "staffed": {
+        "name": "Avec personnel",
+        "state": {
+          "on": "Oui",
+          "off": "Non"
+        }
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Horaires"
+      }
+    }
+  }
+}
