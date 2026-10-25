@@ -68,5 +68,6 @@ and update it when a design decision changes what users get.
   `.github/workflows/release.yml`, which fails if the tag doesn't match the
   manifest, reruns all checks, and attaches `gotabiblioteken.zip` (HACS
   installs that zip, per `zip_release` in `hacs.json`).
+- Release tags must point at a commit on `master` (`release.yml` fails otherwise).
 - Tagging, pushing and publishing releases are outward-facing: confirm with
   the user first.

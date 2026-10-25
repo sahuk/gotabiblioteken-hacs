@@ -11,15 +11,30 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          # Full history and all branches, so origin/master is available for
+          # the reachability check below.
+          fetch-depth: 0
+          # Don't leave the contents:write token in .git/config while repo
+          # code and dev dependencies run.
+          persist-credentials: false
       - name: Tag must match manifest version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           version=$(jq -r .version custom_components/gotabiblioteken/manifest.json)
-          if [ "${{ github.event.release.tag_name }}" != "v${version}" ]; then
-            echo "::error::tag ${{ github.event.release.tag_name }} != v${version} from manifest.json"
+          if [ "$TAG" != "v${version}" ]; then
+            echo "::error::tag $TAG != v${version} from manifest.json"
             exit 1
           fi
-      - uses: astral-sh/setup-uv@v10.3.0
+      - name: Tagged commit must be on master
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "::error::release commit $GITHUB_SHA is not reachable from master"
+            exit 1
+          fi
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
       - name: Checks
         run: |
           uv sync --locked
@@ -36,4 +51,5 @@ jobs:
       - name: Upload zip to release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/gotabiblioteken.zip --clobber
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" dist/gotabiblioteken.zip --clobber

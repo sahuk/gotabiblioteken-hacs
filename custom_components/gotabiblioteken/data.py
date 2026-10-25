@@ -12,12 +12,14 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
+import re
 from typing import Literal, TypedDict
 
 from .libraries import website_for
 
 # Shape of the Axiell payload. Every key is optional: the API is external,
-# so the code reads it with .get() and treats missing data as closed.
+# so the code reads it with .get(), skips entries of the wrong type and
+# treats missing or malformed data as closed.
 ApiInterval = TypedDict(
     "ApiInterval",
     {
@@ -663,17 +665,65 @@ def labels_for(language: str) -> Labels:
     return LABELS.get(language, LABELS_EN)
 
 
+_HM = re.compile(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]")
+# Markdown/HTML syntax a name must not inject into `hours_markdown`.
+_MARKDOWN_SPECIAL = re.compile(r"([\\`*_\[\]()<>!|~&#])")
+
+
+def _entries[T](value: list[T] | None) -> list[T]:
+    """The dict entries of an API list; a non-list or non-dict entry is skipped."""
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
+def _name(branch: ApiBranch) -> str:
+    name = branch.get("branchName")
+    return name.strip() if isinstance(name, str) else ""
+
+
+def _escape_markdown(text: str) -> str:
+    """`text` as literal Markdown: on one line, no links, images or HTML."""
+    return _MARKDOWN_SPECIAL.sub(r"\\\1", " ".join(text.split()))
+
+
 def branch_names(payload: ApiPayload) -> list[str]:
     """Return the sorted, de-duplicated list of branch display names."""
     names: list[str] = []
     seen: set[str] = set()
-    for day in payload.get("dates", []):
-        for branch in day.get("branches", []):
-            name = (branch.get("branchName") or "").strip()
+    for day in _entries(payload.get("dates")):
+        for branch in _entries(day.get("branches")):
+            name = _name(branch)
             if name and name.lower() not in seen:
                 seen.add(name.lower())
                 names.append(name)
     return sorted(names, key=str.lower)
+
+
+def _clean_interval(interval: ApiInterval) -> ApiInterval | None:
+    """The interval with only well-typed fields, or None if its times are bad.
+
+    Times must be 24-hour "HH:MM"; an end of "00:00" (midnight) becomes
+    "24:00" so "HH:MM" string comparisons stay valid.
+    """
+    start, end = interval.get("from"), interval.get("to")
+    if end == "00:00":
+        end = "24:00"
+    # Inline isinstance checks narrow for mypy; typing.TypeIs needs Python
+    # 3.13, newer than the oldest supported Home Assistant (hacs.json).
+    if not (
+        isinstance(start, str)
+        and _HM.fullmatch(start)
+        and isinstance(end, str)
+        and (end == "24:00" or _HM.fullmatch(end))
+    ):
+        return None
+    clean: ApiInterval = {"from": start, "to": end}
+    service_type, info = interval.get("serviceType"), interval.get("info")
+    if isinstance(service_type, str):
+        clean["serviceType"] = service_type
+    clean["info"] = info if isinstance(info, str) else None
+    return clean
 
 
 def _intervals_for(
@@ -682,28 +732,29 @@ def _intervals_for(
     """Merged, de-duplicated opening-hour intervals for a branch on a date."""
     norm = branch.strip().lower()
     entry = next(
-        (d for d in payload.get("dates", []) if d.get("date") == date_str), None
+        (d for d in _entries(payload.get("dates")) if d.get("date") == date_str),
+        None,
     )
     if not entry:
         return []
 
     items: list[ApiInterval] = []
     seen: set[tuple[str | None, ...]] = set()
-    for branch_entry in entry.get("branches", []):
-        if (branch_entry.get("branchName") or "").strip().lower() != norm:
+    for branch_entry in _entries(entry.get("branches")):
+        if _name(branch_entry).lower() != norm:
             continue
-        for interval in branch_entry.get("openingHours", []):
+        for raw in _entries(branch_entry.get("openingHours")):
+            interval = _clean_interval(raw)
+            if interval is None:
+                continue
             key = (
                 interval.get("serviceType"),
-                interval.get("from"),
-                interval.get("to"),
+                interval["from"],
+                interval["to"],
                 interval.get("info"),
             )
             if key not in seen:
                 seen.add(key)
-                if interval.get("to") == "00:00":
-                    # Ends at midnight; keep "HH:MM" string comparisons valid.
-                    interval = {**interval, "to": "24:00"}
                 items.append(interval)
     return items
 
@@ -787,7 +838,7 @@ def compute_branch_today(
         for i in intervals
     ]
 
-    lines = [f"**{branch.strip()}** — {labels.inline(date_label)}"]
+    lines = [f"**{_escape_markdown(branch)}** — {labels.inline(date_label)}"]
     if staffed:
         lines.append(f"{labels.staffed}{labels.colon}{staffed_summary}")
     if self_service:

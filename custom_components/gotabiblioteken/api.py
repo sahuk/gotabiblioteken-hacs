@@ -3,11 +3,33 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
-from aiohttp import ClientSession
+from aiohttp import ClientResponse, ClientSession
 
 from .const import API_URL, CUSTOMER_ID
 from .data import ApiPayload, branch_names
+
+# A week of hours for every branch is a few tens of KB; anything near this is
+# not an opening-hours payload and is refused before it is parsed.
+MAX_RESPONSE_BYTES = 1024 * 1024
+
+
+class ResponseTooLargeError(ValueError):
+    """The API answered with more than MAX_RESPONSE_BYTES."""
+
+
+async def _read_capped(resp: ClientResponse, limit: int) -> bytes:
+    """The (decompressed) body, or ResponseTooLargeError past `limit` bytes."""
+    if resp.content_length is not None and resp.content_length > limit:
+        raise ResponseTooLargeError(f"Response is {resp.content_length} bytes")
+    body = bytearray()
+    # read(n) may return less than n before EOF, so loop; stop at limit + 1.
+    while chunk := await resp.content.read(limit + 1 - len(body)):
+        body += chunk
+        if len(body) > limit:
+            raise ResponseTooLargeError(f"Response exceeds {limit} bytes")
+    return bytes(body)
 
 
 async def async_fetch_dates(
@@ -25,8 +47,11 @@ async def async_fetch_dates(
     async with asyncio.timeout(20):
         async with session.get(url, params=params) as resp:
             resp.raise_for_status()
-            payload: ApiPayload = await resp.json()
-            return payload
+            body = await _read_capped(resp, MAX_RESPONSE_BYTES)
+    payload: ApiPayload = json.loads(body)
+    if not isinstance(payload, dict):
+        raise ValueError("Unexpected response: not a JSON object")
+    return payload
 
 
 async def async_fetch_branch_names(
