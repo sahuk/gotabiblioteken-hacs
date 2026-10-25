@@ -3,10 +3,9 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Select the libraries you want as favorites. Each one becomes an \"opening hours today\" sensor.",
+        "description": "Select the libraries you want as favorites. Each one becomes a device showing today's hours and whether it is staffed or open for self-service right now.",
         "data": {
-          "branches": "Favorite libraries",
-          "include_self_service": "Count Meröppet (self-service) as open"
+          "branches": "Favorite libraries"
         }
       }
     },
@@ -21,9 +20,27 @@
         "title": "Götabiblioteken",
         "description": "Update your favorite libraries.",
         "data": {
-          "branches": "Favorite libraries",
-          "include_self_service": "Count Meröppet (self-service) as open"
+          "branches": "Favorite libraries"
         }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "staffed": {
+        "name": "Staffed",
+        "state": {
+          "on": "Yes",
+          "off": "No"
+        }
+      },
+      "self_service": {
+        "name": "Self-service access"
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Opening hours"
       }
     }
   }

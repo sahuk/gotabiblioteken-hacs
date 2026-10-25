@@ -15,11 +15,17 @@ Setup: `uv sync`. Add a dev tool with `uv add --dev <pkg>`.
 Before every commit, all of these must pass (CI runs the same):
 
 ```bash
-uv run ruff check --fix . && uv run ruff format . && uv run mypy && uv run pytest
+uv run ruff check --fix . && uv run ruff format . && uv run mypy \
+  && uv run scripts/type_coverage.py && uv run pytest
 ```
 
 - mypy is `strict` for the integration and scripts; tests only relax
   untyped defs and `State | None` attribute access.
+- `scripts/type_coverage.py` measures the share of expressions with a real
+  type (not `Any`) and fails below 97% for `custom_components` + `scripts`.
+  Model external data with `TypedDict`s (see `data.py`'s `ApiPayload`) instead
+  of `dict[str, Any]`; use `--per-file` to find where `Any` leaks in. Don't
+  lower the threshold to make a change pass.
 - `tests/test_hacs_conventions.py` enforces the HACS/hassfest file rules
   (single integration dir, manifest keys and order, SemVer, translations in
   sync with `strings.json`, changelog entry for the manifest version). CI also
@@ -28,6 +34,10 @@ uv run ruff check --fix . && uv run ruff format . && uv run mypy && uv run pytes
   the keys in `translations/sv.json`.
 
 ## Skills in the loop
+
+`docs/ux/personas.md` holds the personas, user stories and acceptance
+criteria: treat it as the spec for `/grill-me` and the Spec axis of reviews,
+and update it when a design decision changes what users get.
 
 - `/grill-me`: before starting a non-trivial feature or design change, to
   settle the design tree before writing code.

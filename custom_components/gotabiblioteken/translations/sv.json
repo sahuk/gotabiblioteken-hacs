@@ -3,10 +3,9 @@
     "step": {
       "user": {
         "title": "Götabiblioteken",
-        "description": "Välj de bibliotek du vill ha som favoriter. Varje bibliotek blir en sensor med dagens öppettider.",
+        "description": "Välj de bibliotek du vill ha som favoriter. Varje bibliotek blir en enhet med dagens öppettider och om det är bemannat eller meröppet just nu.",
         "data": {
-          "branches": "Favoritbibliotek",
-          "include_self_service": "Räkna meröppet som öppet"
+          "branches": "Favoritbibliotek"
         }
       }
     },
@@ -21,9 +20,27 @@
         "title": "Götabiblioteken",
         "description": "Uppdatera dina favoritbibliotek.",
         "data": {
-          "branches": "Favoritbibliotek",
-          "include_self_service": "Räkna meröppet som öppet"
+          "branches": "Favoritbibliotek"
         }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "staffed": {
+        "name": "Bemannat",
+        "state": {
+          "on": "Ja",
+          "off": "Nej"
+        }
+      },
+      "self_service": {
+        "name": "Meröppet"
+      }
+    },
+    "sensor": {
+      "hours": {
+        "name": "Öppettider"
       }
     }
   }

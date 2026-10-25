@@ -7,9 +7,12 @@ Home Assistant integration for **library opening hours** from
 [gotabiblioteken.se](https://www.gotabiblioteken.se/) (the Götabiblioteken
 consortium), served by the Axiell JSON API.
 
-Pick your favorite libraries from a dropdown and each one becomes an
-"opening hours today" sensor — aware of multiple shifts per day and of both
-service types (`Bemannat` / staffed and `Meröppet` / self-service).
+Pick your favorite libraries from a dropdown and each one becomes a device
+that answers, at a glance: what are today's hours, is it **staffed** right
+now (`Bemannat`), and can you get in with your library card right now
+(`Meröppet`)? Both answers are always there, with no mode to choose at
+setup, so a household that uses both staffed and self-service hours sees
+everything in one place (see [docs/ux/personas.md](docs/ux/personas.md)).
 
 ## Installation
 
@@ -38,25 +41,34 @@ Go to **Settings → Devices & services → + Add integration** and search for
 
 1. Select your favorite libraries in the multi-select (all ~46 branches are
    fetched live from the API).
-2. Choose whether **Meröppet** (self-service) counts as open.
-3. Submit.
+2. Submit.
 
-Each favorite becomes a `sensor.oppettider_<library>` entity. Change your
-favorites any time with the integration's **Configure** button.
+Each favorite becomes a device named after the library. Change your favorites
+any time with the integration's **Configure** button; libraries you remove
+disappear along with their device.
 
-## What each sensor gives you
+## What each library gives you
 
-State: today's staffed hours as a short string, e.g. `10:00–13:00, 14:00–19:00`
-(or the self-service hours if the branch is self-service only, or `Stängt`).
+Entity IDs below assume Home Assistant is set to Swedish; with another
+language the suffixes follow that language (e.g. `_opening_hours`, `_staffed`,
+`_self_service_access`).
 
-Attributes:
+| Entity | State | Attributes |
+| --- | --- | --- |
+| `sensor.<library>_oppettider` | today's shifts in time order, e.g. `09:00–14:00, Meröppet 14:00–21:00`, or `Stängt` | see below |
+| `binary_sensor.<library>_bemannat` | `on` (open) while staff are working | `hours`: the staffed hours, e.g. `09:00–14:00` |
+| `binary_sensor.<library>_meroppet` | `on` (open) whenever a cardholder can get in: Meröppet **or** staffed hours | `hours`: the combined access window, e.g. `09:00–21:00` |
+
+Each open/closed sensor is on exactly when the current time falls inside its
+own `hours` attribute, so the door icon never disagrees with the hours shown.
+
+Attributes of the hours sensor:
 
 | Attribute              | Example                                             |
 | ---------------------- | --------------------------------------------------- |
 | `branch`               | `Linköpings huvudbibliotek`                         |
 | `date` / `date_label`  | `2026-10-20` / `Tisdag 20 oktober`                  |
 | `weekday`              | `Tisdag`                                            |
-| `open_now`             | `true`                                              |
 | `status`               | `staffed` \| `self_service` \| `closed`             |
 | `staffed_summary`      | `10:00–13:00, 14:00–19:00`                          |
 | `self_service_summary` | `07:00–22:00` or `Stängt`                           |
@@ -65,8 +77,8 @@ Attributes:
 
 `shifts` keeps **every shift** for the day and distinguishes `Bemannat`
 (staffed) from `Meröppet` (self-service), so split days and mixed service types
-are all preserved. `open_now` recomputes locally every minute; the API itself
-is only polled every 3 hours.
+are all preserved. Open/closed states recompute locally every minute; the API
+itself is only polled every 3 hours.
 
 ## Dashboard cards
 
@@ -77,22 +89,23 @@ type: markdown
 title: Öppettider idag
 content: |
   {% for e in [
-    'sensor.oppettider_linkopings_huvudbibliotek',
-    'sensor.oppettider_motala_bibliotek'
+    'sensor.linkopings_huvudbibliotek_oppettider',
+    'sensor.motala_bibliotek_oppettider'
   ] %}
   {{ state_attr(e, 'hours_markdown') }}
 
   {% endfor %}
 ```
 
-**At a glance** (built-in Entities card — state shows today's hours):
+**At a glance** (built-in Entities card, one library):
 
 ```yaml
 type: entities
-title: Bibliotek
+title: Motala bibliotek
 entities:
-  - sensor.oppettider_linkopings_huvudbibliotek
-  - sensor.oppettider_motala_bibliotek
+  - sensor.motala_bibliotek_oppettider
+  - binary_sensor.motala_bibliotek_bemannat
+  - binary_sensor.motala_bibliotek_meroppet
 ```
 
 ## API notes
@@ -133,6 +146,7 @@ Tooling is managed with [uv](https://docs.astral.sh/uv/):
 uv sync
 uv run ruff check . && uv run ruff format --check .
 uv run mypy
+uv run scripts/type_coverage.py   # share of expressions typed (not Any)
 uv run pytest
 ```
 

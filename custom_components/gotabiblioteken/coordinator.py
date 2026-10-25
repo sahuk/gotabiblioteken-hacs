@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
 
 from aiohttp import ClientSession
 
@@ -12,11 +11,12 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import async_fetch_dates
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .data import ApiPayload
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class GotaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+class GotaCoordinator(DataUpdateCoordinator[ApiPayload]):
     """Polls the opening-hours API and shares the payload with all sensors."""
 
     def __init__(self, hass: HomeAssistant, session: ClientSession) -> None:
@@ -28,7 +28,7 @@ class GotaCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self._session = session
 
-    async def _async_update_data(self) -> dict[str, Any]:
+    async def _async_update_data(self) -> ApiPayload:
         try:
             return await async_fetch_dates(self._session)
         except Exception as err:  # surfaced as UpdateFailed

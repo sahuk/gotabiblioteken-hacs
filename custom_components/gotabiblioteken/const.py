@@ -21,4 +21,3 @@ DEFAULT_SCAN_INTERVAL = timedelta(hours=3)
 LOCAL_REFRESH_INTERVAL = timedelta(minutes=1)
 
 CONF_BRANCHES = "branches"
-CONF_INCLUDE_SELF_SERVICE = "include_self_service"

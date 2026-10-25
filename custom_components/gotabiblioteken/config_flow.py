@@ -15,14 +15,13 @@ from homeassistant.config_entries import (
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
-    BooleanSelector,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
 )
 
 from .api import async_fetch_branch_names
-from .const import CONF_BRANCHES, CONF_INCLUDE_SELF_SERVICE, CUSTOMER_ID, DOMAIN
+from .const import CONF_BRANCHES, CUSTOMER_ID, DOMAIN
 
 
 def _schema(branch_options: list[str], defaults: dict[str, Any]) -> vol.Schema:
@@ -39,10 +38,6 @@ def _schema(branch_options: list[str], defaults: dict[str, Any]) -> vol.Schema:
                     sort=True,
                 )
             ),
-            vol.Required(
-                CONF_INCLUDE_SELF_SERVICE,
-                default=defaults.get(CONF_INCLUDE_SELF_SERVICE, True),
-            ): BooleanSelector(),
         }
     )
 
@@ -50,7 +45,7 @@ def _schema(branch_options: list[str], defaults: dict[str, Any]) -> vol.Schema:
 class GotaConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle the initial setup."""
 
-    VERSION = 1
+    VERSION = 2
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -79,7 +74,7 @@ class GotaConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class GotaOptionsFlow(OptionsFlow):
-    """Change favorites / self-service handling after setup."""
+    """Change favorite libraries after setup."""
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         self._entry = config_entry
