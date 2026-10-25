@@ -183,6 +183,7 @@ version and releases are tagged `v<version>`. Note changes under
 uv run scripts/bump_version.py patch   # or minor / major / X.Y.Z
 ```
 
-and run the git / `gh release create` commands it prints. Publishing the
-release runs `.github/workflows/release.yml`, which checks the tag against the
-manifest and attaches the `gotabiblioteken.zip` that HACS installs.
+and run the git commands it prints. Pushing the `v<version>` tag runs
+`.github/workflows/release.yml`, which checks the tag against the manifest,
+reruns all checks and publishes the GitHub release with the
+`gotabiblioteken.zip` that HACS installs and the changelog entry as notes.

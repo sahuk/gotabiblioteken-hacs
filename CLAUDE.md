@@ -64,10 +64,12 @@ and update it when a design decision changes what users get.
   change ships as a release.
 - Add changes under `## [Unreleased]` in `CHANGELOG.md` as you go.
 - Release: `uv run scripts/bump_version.py <major|minor|patch>`,
-  then run the commands it prints. Publishing the GitHub release triggers
+  then run the commands it prints. Pushing the `v<version>` tag triggers
   `.github/workflows/release.yml`, which fails if the tag doesn't match the
-  manifest, reruns all checks, and attaches `gotabiblioteken.zip` (HACS
-  installs that zip, per `zip_release` in `hacs.json`).
+  manifest, reruns all checks with a read-only token, and then publishes the
+  GitHub release with `gotabiblioteken.zip` attached (HACS installs that zip,
+  per `zip_release` in `hacs.json`) and the changelog section as notes. Don't
+  create the release by hand.
 - Release tags must point at a commit on `master` (`release.yml` fails otherwise).
 - Tagging, pushing and publishing releases are outward-facing: confirm with
   the user first.

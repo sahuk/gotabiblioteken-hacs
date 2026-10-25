@@ -325,7 +325,7 @@ def test_hostile_branch_name_is_escaped_in_markdown():
     ]
     first = markdown.splitlines()[0]
     assert first.startswith(
-        "**\\[x\\]\\(javascript:alert\\(1\\)\\) \\<img src=x\\> \\# \\*h\\*** — "
+        "**\\[x\\]\\(javascript\\:alert\\(1\\)\\) \\<img src=x\\> \\# \\*h\\*** — "
     )
     # Every metacharacter is backslash-escaped, so no link, image or HTML.
     unescaped = [
