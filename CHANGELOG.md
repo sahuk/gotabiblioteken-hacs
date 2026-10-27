@@ -8,6 +8,15 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Security
+
+- Library names in `hours_markdown` also escape `:` and `.`, so a name
+  containing a bare URL can't be turned into a link.
+- Release workflow: checks and the build run with a read-only token in a
+  separate job from publishing, and the release is published only once its
+  zip is attached. Releases are now made by pushing the tag. GitHub Actions
+  updated to Node 24 versions (`actions/checkout` v7).
+
 ## [1.1.0] - 2026-10-25
 
 ### Added

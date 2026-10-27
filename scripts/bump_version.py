@@ -80,10 +80,9 @@ def main() -> int:
     CHANGELOG.write_text(changelog, encoding="utf-8")
     print(
         "\nNext:\n"
-        f"  git commit -am 'Release v{version}'\n"
-        f"  git tag v{version}\n"
-        "  git push && git push --tags\n"
-        f"  gh release create v{version} --generate-notes"
+        f"  git commit -am 'Release v{version}', then merge it to master\n"
+        f"  git tag v{version} <master commit> && git push origin v{version}\n"
+        "Pushing the tag runs release.yml, which checks, builds and publishes."
     )
     return 0
 

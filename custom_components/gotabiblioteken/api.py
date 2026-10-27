@@ -20,7 +20,12 @@ class ResponseTooLargeError(ValueError):
 
 
 async def _read_capped(resp: ClientResponse, limit: int) -> bytes:
-    """The (decompressed) body, or ResponseTooLargeError past `limit` bytes."""
+    """The body, or ResponseTooLargeError past `limit` bytes.
+
+    The cap counts decompressed bytes, as read from `resp.content`. The
+    Content-Length shortcut counts bytes on the wire (compressed, if the
+    server compresses), so it can only reject early, never let more through.
+    """
     if resp.content_length is not None and resp.content_length > limit:
         raise ResponseTooLargeError(f"Response is {resp.content_length} bytes")
     body = bytearray()

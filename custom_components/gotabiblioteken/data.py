@@ -685,7 +685,8 @@ def labels_for(language: str) -> Labels:
 
 _HM = re.compile(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]")
 # Markdown/HTML syntax a name must not inject into `hours_markdown`.
-_MARKDOWN_SPECIAL = re.compile(r"([\\`*_\[\]()<>!|~&#])")
+# `:` and `.` too, so a GFM renderer can't autolink a bare `www.`/`https://`.
+_MARKDOWN_SPECIAL = re.compile(r"([\\`*_\[\]()<>!|~&#:.])")
 
 
 def _entries[T](value: list[T] | None) -> list[T]:
@@ -701,7 +702,7 @@ def _name(branch: ApiBranch) -> str:
 
 
 def _escape_markdown(text: str) -> str:
-    """`text` as literal Markdown: on one line, no links, images or HTML."""
+    """`text` as literal Markdown: on one line, no links (bare URLs either), images or HTML."""
     return _MARKDOWN_SPECIAL.sub(r"\\\1", " ".join(text.split()))
 
 
