@@ -8,6 +8,8 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-27
+
 ### Security
 
 - Library names in `hours_markdown` also escape `:` and `.`, so a name
