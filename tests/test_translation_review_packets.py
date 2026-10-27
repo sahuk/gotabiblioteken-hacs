@@ -99,3 +99,16 @@ def test_packet_shows_real_output(tmp_path, row):
     text = (tmp_path / "sv.md").read_text(encoding="utf-8")
     assert row in text
     assert '| `labels.not_staffed` | "Not staffed" | **"Obemannat"** |' in text
+
+
+def test_parsed_old_labels_match_the_runtime_labels():
+    # Old labels are parsed from data.py, never imported; at HEAD the parse
+    # must agree with the real Labels objects.
+    parsed = packets.old_label_fields("HEAD", _show({}))
+    assert parsed == {code: packets.label_fields(lab) for code, lab in LABELS.items()}
+
+
+@pytest.mark.parametrize("ref", ["--output=/tmp/x", "no-such-ref"])
+def test_unresolvable_ref_is_refused(ref):
+    with pytest.raises(SystemExit):
+        packets.resolve_ref(ref)

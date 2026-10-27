@@ -16,6 +16,10 @@ release is tagged `v<version>`.
   separate job from publishing, and the release is published only once its
   zip is attached. Releases are now made by pushing the tag. GitHub Actions
   updated to Node 24 versions (`actions/checkout` v7).
+- Release workflow: the zip and release notes are built from the tagged
+  commit (`git archive`), not the working tree the checks ran in; the build
+  asserts it checked out the tagged commit, and publishing stops if the tag
+  was moved to another commit after the build.
 
 ## [1.1.0] - 2026-10-25
 
