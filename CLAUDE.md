@@ -84,5 +84,7 @@ and update it when a design decision changes what users get.
   per `zip_release` in `hacs.json`) and the changelog section as notes. Don't
   create the release by hand.
 - Release tags must point at a commit on `master` (`release.yml` fails otherwise).
+  A repo ruleset ("Protect release tags") stops `v*` tags from being moved or
+  deleted once pushed: a bad tag needs a new version, not a re-tag.
 - Tagging, pushing and publishing releases are outward-facing: confirm with
   the user first.
