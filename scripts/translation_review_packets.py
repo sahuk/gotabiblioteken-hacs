@@ -13,15 +13,14 @@ Also writes OUT_DIR/index.json listing the languages with something to review.
 from __future__ import annotations
 
 import argparse
+import ast
 from collections.abc import Callable
 import dataclasses
 from datetime import datetime
-import importlib
 import json
 from pathlib import Path
 import subprocess
 import sys
-import tempfile
 from typing import TypedDict
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -133,6 +132,27 @@ def git_show(ref: str, path: str) -> str | None:
     return result.stdout if result.returncode == 0 else None
 
 
+def resolve_ref(ref: str) -> str:
+    """The commit `ref` names; refuses anything git can't resolve to one."""
+    result = subprocess.run(
+        [
+            "git",
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            "--end-of-options",
+            f"{ref}^{{commit}}",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise SystemExit(f"not a commit: {ref}")
+    return result.stdout.strip()
+
+
 def latest_tag() -> str:
     return subprocess.run(
         ["git", "describe", "--tags", "--abbrev=0", "--match", "v*"],
@@ -165,32 +185,68 @@ def label_fields(labels: object) -> dict[str, str]:
     }
 
 
+def _literal(node: ast.expr) -> str | None:
+    """A literal label value as JSON text, or None if it isn't a literal."""
+    try:
+        value: object = ast.literal_eval(node)
+    except ValueError:
+        return None
+    return json.dumps(value, ensure_ascii=False)
+
+
 def old_label_fields(ref: str, show: Show) -> dict[str, dict[str, str]]:
-    """Each language's label fields as of `ref`, from that ref's data.py."""
-    files = {
-        name: show(ref, f"{INTEGRATION}/{name}") for name in ("data.py", "libraries.py")
+    """Each language's label fields as of `ref`, parsed (never run) from data.py.
+
+    Reads the `Labels` field defaults, every `LABELS_XX = Labels(...)` with
+    literal keyword arguments, and the `LABELS` table mapping codes to them.
+    """
+    text = show(ref, f"{INTEGRATION}/data.py")
+    if text is None:
+        return {}
+    tree = ast.parse(text)
+    defaults: dict[str, str] = {}
+    instances: dict[str, dict[str, str]] = {}
+    table: dict[str, str] = {}
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == "Labels":
+            for item in node.body:
+                if (
+                    isinstance(item, ast.AnnAssign)
+                    and isinstance(item.target, ast.Name)
+                    and item.value is not None
+                    and (value := _literal(item.value)) is not None
+                ):
+                    defaults[f"labels.{item.target.id}"] = value
+        target, value_node = None, None
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value_node = node.targets[0], node.value
+        elif isinstance(node, ast.AnnAssign):
+            target, value_node = node.target, node.value
+        if not isinstance(target, ast.Name) or value_node is None:
+            continue
+        if (
+            isinstance(value_node, ast.Call)
+            and isinstance(value_node.func, ast.Name)
+            and value_node.func.id == "Labels"
+        ):
+            instances[target.id] = {
+                f"labels.{kw.arg}": literal
+                for kw in value_node.keywords
+                if kw.arg and (literal := _literal(kw.value)) is not None
+            }
+        elif target.id == "LABELS" and isinstance(value_node, ast.Dict):
+            for key, name in zip(value_node.keys, value_node.values, strict=True):
+                if (
+                    isinstance(key, ast.Constant)
+                    and isinstance(key.value, str)
+                    and isinstance(name, ast.Name)
+                ):
+                    table[key.value] = name.id
+    return {
+        code: defaults | instances[name]
+        for code, name in table.items()
+        if name in instances
     }
-    if any(text is None for text in files.values()):
-        return {}
-    with tempfile.TemporaryDirectory() as tmp:
-        package = Path(tmp) / "_translation_review_old"
-        package.mkdir()
-        (package / "__init__.py").write_text("", encoding="utf-8")
-        for name, text in files.items():
-            (package / name).write_text(text or "", encoding="utf-8")
-        sys.path.insert(0, tmp)
-        try:
-            module = importlib.import_module("_translation_review_old.data")
-            labels: object = getattr(module, "LABELS", {})
-        finally:
-            sys.path.remove(tmp)
-            for name in [
-                m for m in sys.modules if m.startswith("_translation_review_old")
-            ]:
-                del sys.modules[name]
-    if not isinstance(labels, dict):
-        return {}
-    return {str(code): label_fields(value) for code, value in labels.items()}
 
 
 def translation(code: str, ref: str | None, show: Show) -> dict[str, str]:
@@ -355,6 +411,7 @@ def main() -> int:
     if unknown:
         raise SystemExit(f"unknown language(s): {', '.join(unknown)}")
     since: str = args.since or latest_tag()
+    resolve_ref(since)  # git refs can't start with "-", so it's safe in git show
     index = build(args.out_dir, since, args.lang, review_all=args.all)
     if not index["languages"]:
         print(f"nothing to review since {since}")
