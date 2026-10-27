@@ -63,6 +63,13 @@ and update it when a design decision changes what users get.
   `v<version>`. HACS offers versions from GitHub releases, so every user-facing
   change ships as a release.
 - Add changes under `## [Unreleased]` in `CHANGELOG.md` as you go.
+- Before a release, finish the work first: run the `security-audit` skill on
+  the changes since the last tag, then fix its findings **and** its
+  hardening notes (and any open review or translation-review items) in a PR
+  merged to `master`. Only bump the version once nothing is left; an item
+  is deferred only if the user explicitly says so, and then it is noted in
+  the changelog. Fixes never go in as a follow-up to a release that was
+  already cut.
 - Release: `uv run scripts/bump_version.py <major|minor|patch>`,
   then run the commands it prints. Pushing the `v<version>` tag triggers
   `.github/workflows/release.yml`, which fails if the tag doesn't match the
