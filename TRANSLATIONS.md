@@ -27,12 +27,23 @@ or Latin American Spanish (`es-419`) gets English until it has its own file.
 | Lithuanian | `lt` | Baltic EU neighbor | **needs native review** |
 | Polish | `pl` | Baltic Sea EU neighbor | **needs native review** |
 
-The non-Swedish translations are drafts. They have had one review pass by AI
-reviewers prompted in each language (wording, library terminology, date
-grammar), but not by native speakers. If you speak one of them, please
+The non-Swedish translations are drafts. They have had AI review passes
+(the whole text once, and the Staffed hours texts in 1.1.0), with reviewers
+prompted in each language (wording, library terminology, date grammar), but
+not by native speakers. If you speak one of them, please
 check the setup dialog, the entity names (Open, Staffed, Opening hours) and
 the generated text, and open an issue or a pull request with corrections.
 Library names (Motala, Östra Ryd, …) are place names and are not translated.
+
+## Reviewing
+
+Changed text is reviewed with the `translation-review` Claude Code skill
+(`.claude/skills/translation-review/`). It builds one packet per language
+with `uv run scripts/translation_review_packets.py <dir>`: the strings changed
+since the last release, real output and the full file. It then briefs one
+reviewer agent per language, in that language. The reviewers are AI on a
+small, cheap model, so their verdicts are a first pass, not a replacement for
+a native speaker.
 
 ## Waiting on Home Assistant
 

@@ -56,6 +56,10 @@ and update it when a design decision changes what users get.
 - `/security-review` on pending changes; the `security-audit` skill (full
   audit mode) before a release or after touching `api.py`, the config flow, or
   anything that handles API input.
+- `translation-review` (`.claude/skills/translation-review/`): when
+  user-facing text changed (translation files or `Labels`), and before a
+  release that changes any. It reviews each human language with its own cheap
+  reviewer agent, using packets from `scripts/translation_review_packets.py`.
 
 ## Versioning and releases
 
@@ -64,8 +68,10 @@ and update it when a design decision changes what users get.
   change ships as a release.
 - Add changes under `## [Unreleased]` in `CHANGELOG.md` as you go.
 - Before a release, finish the work first: run the `security-audit` skill on
-  the changes since the last tag, then fix its findings **and** its
-  hardening notes (and any open review or translation-review items) in a PR
+  the changes since the last tag, and the `translation-review` skill if
+  user-facing text changed since then. Fix the audit's findings **and** its
+  hardening notes, the approved translation changes, and any open review
+  items, in a PR
   merged to `master`. Only bump the version once nothing is left; an item
   is deferred only if the user explicitly says so, and then it is noted in
   the changelog. Fixes never go in as a follow-up to a release that was
