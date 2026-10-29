@@ -8,6 +8,11 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Added
+
+- `icon.png` at the repository root, a copy of the brand icon, so the HACS
+  browser shows the integration's icon.
+
 ## [1.1.2] - 2026-10-29
 
 ### Changed

@@ -129,3 +129,9 @@ def test_brand_icon(integration_dir: Path) -> None:
     with Image.open(integration_dir / "brand" / "icon.png") as icon:
         assert icon.format == "PNG"
         assert icon.size == (256, 256)
+
+
+def test_root_icon_matches_brand_icon(integration_dir: Path) -> None:
+    """The HACS browser shows the repo-root icon.png; keep it the brand icon."""
+    root_icon = (ROOT / "icon.png").read_bytes()
+    assert root_icon == (integration_dir / "brand" / "icon.png").read_bytes()
