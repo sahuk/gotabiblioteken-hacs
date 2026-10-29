@@ -8,6 +8,8 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-29
+
 ### Changed
 
 - `hacs.json` declares `"country": "SE"`, so HACS lists the integration
