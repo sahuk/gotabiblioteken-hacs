@@ -8,6 +8,8 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-10-29
+
 ### Added
 
 - `icon.png` at the repository root, a copy of the brand icon, so the HACS
