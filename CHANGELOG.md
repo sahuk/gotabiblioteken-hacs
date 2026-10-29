@@ -8,6 +8,11 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Changed
+
+- `hacs.json` declares `"country": "SE"`, so HACS lists the integration
+  under Sweden when users filter by country.
+
 ## [1.1.1] - 2026-10-27
 
 ### Security

@@ -94,6 +94,7 @@ def test_manifest_urls_point_at_same_repo(manifest: dict[str, Any]) -> None:
 def test_hacs_json(hacs: dict[str, Any], manifest: dict[str, Any]) -> None:
     assert hacs["name"]
     assert hacs["content_in_root"] is False
+    assert hacs["country"] == "SE"
     if hacs.get("zip_release"):
         assert hacs["filename"] == f"{manifest['domain']}.zip"
 
