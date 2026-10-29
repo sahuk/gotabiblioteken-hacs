@@ -7,6 +7,9 @@ Home Assistant integration for **library opening hours** from
 [gotabiblioteken.se](https://www.gotabiblioteken.se/) (the Götabiblioteken
 consortium), served by the Axiell JSON API.
 
+This is an unofficial integration. It is not affiliated with or endorsed by
+Götabiblioteken.
+
 Pick your favorite libraries from a dropdown and each one becomes a device
 that answers, at a glance: what are today's hours, and is the library
 **open** right now, counting both staffed and Meröppet (self-service) hours?
