@@ -8,6 +8,13 @@ release is tagged `v<version>`.
 
 ## [Unreleased]
 
+### Changed
+
+- `hacs.json` declares `"country": "SE"`, so HACS lists the integration
+  under Sweden when users filter by country.
+- The README states that the integration is unofficial and not affiliated
+  with Götabiblioteken.
+
 ## [1.1.1] - 2026-10-27
 
 ### Security
